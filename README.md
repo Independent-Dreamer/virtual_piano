@@ -1,5 +1,19 @@
 # Virtual_Piano
 
+### 演示视频：
+
+https://www.bilibili.com/video/BV1D8411x78X
+
+### 主要功能：
+
+1.连接midi键盘弹奏，实时显示瀑布流/五线谱，实时分析和弦
+
+2.播放midi文件，实时显示瀑布流/五线谱（可自定义根音，对和弦做更准确的判断）
+
+### 运行方式：
+
+安装pygame, mido等相关库，执行virtual_piano.py；virtual_piano_exe中包含pyinstaller生成的可执行文件，可直接运行
+
 ### global_settings.ini中的相关设置：
 
 set_root_from_file      仅midi播放模式可用，是否从已保存的midi文件读取根音（避免一些转位和弦的误识别）
