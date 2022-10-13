@@ -250,7 +250,7 @@ screen = pygame.display.set_mode((global_resolution_x, global_resolution_y))
 
 # 设置窗口标题，窗口icon
 pygame.display.set_caption('Virtual Piano')
-img = pygame.image.load("DEFAULT_ICON.ico")
+img = pygame.image.load("icon/DEFAULT_ICON.ico")
 pygame.display.set_icon(img)
 
 # 设置背景图片
@@ -261,34 +261,23 @@ bkg = pygame.image.load(background_folder_path + '/' + all_bkg_name[bkg_set]).co
 screen.blit(bkg, (background_offset_x, background_offset_y))
 
 # 音符、五线谱
-sheet_w = pygame.image.load('musicsheets_w.png').convert_alpha()
-note_w = pygame.image.load('note_w.png').convert_alpha()
-sharp_w = pygame.image.load('sharp_w.png').convert_alpha()
-flat_w = pygame.image.load('flat_w.png').convert_alpha()
-sheet = pygame.image.load('musicsheets.png').convert_alpha()
-note = pygame.image.load('note.png').convert_alpha()
-sharp = pygame.image.load('sharp.png').convert_alpha()
-flat = pygame.image.load('flat.png').convert_alpha()
-double_sharp = pygame.image.load('double_sharp.png').convert_alpha()
-double_sharp_w = pygame.image.load('double_sharp_w.png').convert_alpha()
-double_flat = pygame.image.load('double_flat.png').convert_alpha()
-double_flat_w = pygame.image.load('double_flat_w.png').convert_alpha()
-restore = pygame.image.load('restore.png').convert_alpha()
-restore_w = pygame.image.load('restore_w.png').convert_alpha()
-note_line = pygame.image.load('note_with_line.png').convert_alpha()
-note_line_w = pygame.image.load('note_with_line_w.png').convert_alpha()
-line = pygame.image.load('line.png').convert_alpha()
-line_w = pygame.image.load('line_w.png').convert_alpha()
-line_w_long = pygame.image.load('line_w_long.png').convert_alpha()
+sheet_w = pygame.image.load('music_score/musicsheets_w.png').convert_alpha()
+note_w = pygame.image.load('music_score/note_w.png').convert_alpha()
+sharp_w = pygame.image.load('music_score/sharp_w.png').convert_alpha()
+flat_w = pygame.image.load('music_score/flat_w.png').convert_alpha()
+double_sharp_w = pygame.image.load('music_score/double_sharp_w.png').convert_alpha()
+double_flat_w = pygame.image.load('music_score/double_flat_w.png').convert_alpha()
+restore_w = pygame.image.load('music_score/restore_w.png').convert_alpha()
+line_w = pygame.image.load('music_score/line_w.png').convert_alpha()
+line_w_long = pygame.image.load('music_score/line_w_long.png').convert_alpha()
 
 # 半透明
-note_w_trans = pygame.image.load('note_w_trans.png').convert_alpha()
-sharp_w_trans = pygame.image.load('sharp_w_trans.png').convert_alpha()
-flat_w_trans = pygame.image.load('flat_w_trans.png').convert_alpha()
-double_sharp_w_trans = pygame.image.load('double_sharp_w_trans.png').convert_alpha()
-double_flat_w_trans = pygame.image.load('double_flat_w_trans.png').convert_alpha()
-restore_w_trans = pygame.image.load('restore_w_trans.png').convert_alpha()
-line_w_trans = pygame.image.load('line_w_trans.png').convert_alpha()
+note_w_trans = pygame.image.load('music_score/note_w_trans.png').convert_alpha()
+sharp_w_trans = pygame.image.load('music_score/sharp_w_trans.png').convert_alpha()
+flat_w_trans = pygame.image.load('music_score/flat_w_trans.png').convert_alpha()
+double_sharp_w_trans = pygame.image.load('music_score/double_sharp_w_trans.png').convert_alpha()
+double_flat_w_trans = pygame.image.load('music_score/double_flat_w_trans.png').convert_alpha()
+restore_w_trans = pygame.image.load('music_score/restore_w_trans.png').convert_alpha()
 
 # 透明遮挡层
 trans_screen = pygame.Surface((global_resolution_x, global_resolution_y - 85))
