@@ -74,6 +74,8 @@ trans_screen_opacity    背景前透明矩形透明度
 
 top_square_opacity      顶端矩形透明度
 
+waterfall_opacity_for_mixed_mode      瀑布流透明度（仅瀑布流+五线谱both模式下有效）
+
 [GlobalResolution]      全局分辨率（默认1920x1200，更改分辨率为裁剪而非缩放，需要修改offset）
 
 [BackGroundOffset]      背景图片位移值
