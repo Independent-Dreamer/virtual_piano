@@ -62,6 +62,7 @@ trans_screen_color = (
     config.getint('TransScreenColor', 'trans_screen_color_G'),
     config.getint('TransScreenColor', 'trans_screen_color_B'))  # 顶端矩形颜色
 trans_screen_opacity = config.getint('TransScreenOpacity', 'trans_screen_opacity')
+waterfall_opacity = config.getint('WaterFallOpacityForMixedMode', 'waterfall_opacity_for_mixed_mode')
 top_square_opacity = config.getint('TopSquareOpacity', 'top_square_opacity')
 global_resolution_x = config.getint('GlobalResolution', 'global_resolution_x')  # 分辨率x（修改可能显示不正常）
 global_resolution_y = config.getint('GlobalResolution', 'global_resolution_y')  # 分辨率y
@@ -133,10 +134,12 @@ select_mode.place(x=160, y=104, height=32, width=320)
 
 # 设置下拉菜单中的值
 if len(midi_input_devices) > 1:
-    all_mode = ['MIDI Keyboard + Waterfall', 'MIDI Keyboard + Music Score',
-                'MIDI File + Waterfall', 'MIDI File + Waterfall(reverse)', 'MIDI File + Music Score']
+    all_mode = ['MIDI Keyboard + Waterfall', 'MIDI Keyboard + Music Score', 'MIDI Keyboard + Both',
+                'MIDI File + Waterfall (rise)', 'MIDI File + Waterfall (fall)', 'MIDI File + Music Score',
+                'MIDI File + Both (rise)', 'MIDI File + Both (fall)']
 else:
-    all_mode = ['MIDI File + Waterfall', 'MIDI File + Waterfall(reverse)', 'MIDI File + Music Score']
+    all_mode = ['MIDI File + Waterfall (rise)', 'MIDI File + Waterfall (fall)', 'MIDI File + Music Score',
+                'MIDI File + Both (rise)', 'MIDI File + Both (fall)']
 select_input['value'] = midi_input_devices
 select_output['value'] = midi_output_devices
 select_mode['value'] = all_mode
@@ -154,7 +157,7 @@ mode_name = select_mode.get()
 # 获取下拉菜单选择值对应的序号
 input_id_pos = 0
 output_id_pos = 0
-mode_id = 0  # 0 瀑布流+midi键盘 1 五线谱+midi键盘 2 瀑布流+midi文件 3 瀑布流反向+midi文件 4 五线谱+midi文件
+mode_id = 0  # 0-2 MIDI键盘 3-6 MIDI文件
 
 
 # 输入选择处理函数
@@ -198,9 +201,9 @@ def func3(events):
         if all_mode[mode_id] == mode_name:
             break
     # midi input unavailable
-    if len(all_mode) == 3:
-        mode_id += 2
-        # 0 瀑布流+midi键盘 1 五线谱+midi键盘 2 瀑布流+midi文件 3 瀑布流反向+midi文件 4 五线谱+midi文件
+    if len(all_mode) == 5:
+        mode_id += 3
+        # 0-2 MIDI键盘 3-6 MIDI文件
 
 
 # 绑定下拉菜单事件
@@ -227,14 +230,14 @@ for mode_id in range(len(all_mode)):
         break
 
 # midi input unavailable
-if len(all_mode) == 3:
-    mode_id += 2
+if len(all_mode) == 5:
+    mode_id += 3
 
 # tkinter窗口主循环
 main_window.mainloop()
 
 # midi设备初始化（输入+输出）
-if mode_id <= 1:
+if mode_id <= 2:
     if input_id_pos == -1:
         midi1 = 'Unable'
     else:
@@ -259,6 +262,11 @@ bkg_set = 0
 bkg_num = len(all_bkg_name)
 bkg = pygame.image.load(background_folder_path + '/' + all_bkg_name[bkg_set]).convert()
 screen.blit(bkg, (background_offset_x, background_offset_y))
+
+# 透明效果
+bkg_trans = pygame.Surface((1920, 915))
+bkg_trans.set_alpha(waterfall_opacity)
+bkg_trans.blit(bkg, (background_offset_x, background_offset_y - 85))
 
 # 音符、五线谱
 sheet_w = pygame.image.load('music_score/musicsheets_w.png').convert_alpha()
@@ -578,16 +586,16 @@ def get_root():
             if msg[6] == 'f':
                 cur_note = int(msg[msg.find('note=') + 5] + msg[msg.find('note=') + 6] + msg[msg.find('note=') + 7])
                 start_time += int(msg[(msg.find('time=') + 5):])
-                if mode_id == 2 or mode_id == 4:
+                if mode_id == 3 or mode_id == 5 or mode_id == 6:
                     root_events.append([0, cur_note - 21, start_time])
-                elif mode_id == 3:
+                elif mode_id == 4 or mode_id == 7:
                     root_events.append([0, cur_note - 21, start_time + root_delta])
             elif msg[6] == 'n':
                 cur_note = int(msg[msg.find('note=') + 5] + msg[msg.find('note=') + 6] + msg[msg.find('note=') + 7])
                 start_time += int(msg[(msg.find('time=') + 5):])
-                if mode_id == 2 or mode_id == 4:
+                if mode_id == 3 or mode_id == 5 or mode_id == 6:
                     root_events.append([1, cur_note - 21, start_time])
-                elif mode_id == 3:
+                elif mode_id == 4 or mode_id == 7:
                     root_events.append([1, cur_note - 21, start_time + root_delta])
 
 
@@ -698,7 +706,7 @@ def input_midi():
                 notes_count[(c[0][0][1] - 21) % 12] += 1
                 all_note_size += 1
                 key_note.append(c[0][0][1] - 21)
-                if mode_id == 0:
+                if mode_id == 0 or mode_id == 2:
                     waterfalls[c[0][0][1] - 21].append([0, 0])
             elif c[0][0][0] == 128:
                 if sustain == 0:
@@ -708,7 +716,7 @@ def input_midi():
                     on_sustain.append(c[0][0][1])
                 if len(key_note) > 0:
                     key_note.remove(c[0][0][1] - 21)
-                    if mode_id == 0 and len(waterfalls[c[0][0][1] - 21]) - 1 >= 0:
+                    if (mode_id == 0 or mode_id == 2) and len(waterfalls[c[0][0][1] - 21]) - 1 >= 0:
                         waterfalls[c[0][0][1] - 21][len(waterfalls[c[0][0][1] - 21]) - 1][0] = 1
             elif c[0][0][0] == 176:
                 if c[0][0][1] == 64:
@@ -737,7 +745,7 @@ def get_chord_run():
     while True:
         if if_exit == 1:
             break
-        if mode_id == 1 or mode_id == 4:
+        if mode_id == 1 or mode_id == 2 or mode_id == 5 or mode_id == 6 or mode_id == 7:
             time.sleep(0.5)
             continue
         cur_chord, note_on_sheet = chord.get_chord(key_note, on_sustain, major_key, root)
@@ -749,7 +757,7 @@ def get_chord_run():
 
 
 # 若为MIDI播放模式，则读取音符
-if mode_id >= 2:
+if mode_id >= 3:
     get_note()
     if set_root_from_file == 1:
         get_root()
@@ -763,7 +771,7 @@ t6 = Thread(target=print_major_key)
 t6.start()
 
 # if input mode then get midi signals
-if mode_id <= 1:
+if mode_id <= 2:
     t8 = Thread(target=input_midi)
     t8.start()
 
@@ -788,7 +796,7 @@ finished2 = 0
 cur_pos = 0
 cur_pos2 = 0
 
-if mode_id == 1 or mode_id == 4:
+if mode_id == 1 or mode_id == 2 or mode_id == 5 or mode_id == 6 or mode_id == 7:
     print_trans_screen = True
 else:
     print_trans_screen = False
@@ -798,8 +806,8 @@ while True:
     global_time = get_u_second() - base_time
     global_time_delta = int(global_time * time_delta / 10000)
 
-    # set note
-    if finished == 0 and (mode_id == 2 or mode_id == 4):
+    # set note (score only or waterfall up)
+    if finished == 0 and (mode_id == 3 or mode_id == 5 or mode_id == 6):
         while global_events[cur_pos][2] <= global_time_delta:
             if global_events[cur_pos][0] == 1:
                 key_note.append(global_events[cur_pos][1])
@@ -807,12 +815,12 @@ while True:
                     midi2.note_on(global_events[cur_pos][1] + 21, global_events[cur_pos][3])
                 notes_count[global_events[cur_pos][1] % 12] += 1
                 all_note_size += 1
-                if mode_id == 2:
+                if mode_id == 3 or mode_id == 6:
                     waterfalls[global_events[cur_pos][1]].append([0, 0])
             elif global_events[cur_pos][0] == 0:
                 if midi2 != 'Unable':
                     midi2.note_off(global_events[cur_pos][1] + 21)
-                if mode_id == 2:
+                if mode_id == 3 or mode_id == 6:
                     waterfalls[global_events[cur_pos][1]][len(waterfalls[global_events[cur_pos][1]]) - 1][0] = 1
                 for i in key_note:
                     if i == global_events[cur_pos][1]:
@@ -822,8 +830,8 @@ while True:
                 finished = 1
                 break
 
-    # set note(mode 2)
-    if finished == 0 and mode_id == 3:
+    # set note (waterfall down)
+    if finished == 0 and (mode_id == 4 or mode_id == 7):
         while global_events[cur_pos][2] <= global_time_delta:
             if global_events[cur_pos][0] == 1:
                 waterfalls[global_events[cur_pos][1]].append([0, 0, global_events[cur_pos][3]])
@@ -834,8 +842,8 @@ while True:
                 finished = 1
                 break
 
-    # set root(all mode)
-    if finished2 == 0 and mode_id >= 2 and set_root_from_file == 1:
+    # set root (midi playing)
+    if finished2 == 0 and mode_id >= 3 and set_root_from_file == 1:
         while root_events[cur_pos2][2] <= global_time_delta:
             if root_events[cur_pos2][0] == 1:
                 root = root_events[cur_pos2][1] % 12
@@ -845,8 +853,8 @@ while True:
                 root = -1
                 break
 
-    # get chord (music score mode only)
-    if mode_id == 1 or mode_id == 4:
+    # get chord (with music score)
+    if mode_id == 1 or mode_id == 2 or mode_id == 5 or mode_id == 6 or mode_id == 7:
         cur_chord, note_on_sheet = chord.get_chord(key_note, on_sustain, major_key, root)
         if cur_chord == '':
             chord_text = chord_font.render('(Empty)', True, chord_text_color)
@@ -876,9 +884,9 @@ while True:
     elif if_tonicization == 1:
         tonicization_print = font1.render('*', True, major_key_text_color)
 
-    # move waterfall with delete (waterfall mode only)
-    if mode_id == 0 or mode_id == 2 or mode_id == 3:
-        check10ms = int(global_time / 8600)
+    # move waterfall with delete (waterfall up and down)
+    if mode_id == 0 or mode_id == 2 or mode_id == 3 or mode_id == 4 or mode_id == 6 or mode_id == 7:
+        check10ms = int(global_time / 10000)
         for z in range(check10ms - last_get_10ms):
             last_get_10ms = check10ms
             # ignored time below
@@ -903,12 +911,49 @@ while True:
     if print_trans_screen:
         screen.blit(trans_screen, (0, 85))
 
-    # print chord (music score mode)
-    if mode_id == 1 or mode_id == 4:
+    # print waterfalls (waterfall up)
+    if mode_id == 0 or mode_id == 2 or mode_id == 3 or mode_id == 6:
+        for i in range(88):
+            for j in waterfalls[i]:
+                pygame.draw.rect(screen, NTcol, (waterfall_pos1[i], global_resolution_y - 200 - j[1], 18, j[1] - j[0]),
+                                 0, border_radius=3)
+                pygame.draw.rect(screen, NTcol2, (waterfall_pos2[i], global_resolution_y - 199 - j[1],
+                                                  16, j[1] - j[0] - 2),
+                                 0, border_radius=3)
+
+    # print waterfalls (waterfall down)
+    if mode_id == 4 or mode_id == 7:
+        for i in range(88):
+            if len(waterfalls[i]) > 0:
+                if waterfalls[i][0][0] <= (global_resolution_y - 200) <= waterfalls[i][0][1]:
+                    if appended[i] == 0:
+                        key_note.append(i)
+                        if midi2 != 'Unable':
+                            midi2.note_on(i + 21, waterfalls[i][0][2])
+                        notes_count[i % 12] += 1
+                        all_note_size += 1
+                        appended[i] = 1
+                elif waterfalls[i][0][0] > (global_resolution_y - 200):
+                    if appended[i] == 1:
+                        key_note.remove(i)
+                        if midi2 != 'Unable':
+                            midi2.note_off(i + 21)
+                        appended[i] = 0
+                    waterfalls[i].pop(0)
+            for j in waterfalls[i]:
+                pygame.draw.rect(screen, NTcol, (waterfall_pos1[i], j[0], 18, j[1] - j[0]), 0, border_radius=3)
+                pygame.draw.rect(screen, NTcol2, (waterfall_pos2[i], j[0] + 1, 16, j[1] - j[0] - 2), 0, border_radius=3)
+
+    # print transparent background (mixed mode only)
+    if mode_id == 2 or mode_id == 6 or mode_id == 7:
+        screen.blit(bkg_trans, (background_offset_x, background_offset_y + 85))
+
+    # print chord (with music score)
+    if mode_id == 1 or mode_id == 2 or mode_id == 5 or mode_id == 6 or mode_id == 7:
         screen.blit(chord_text, (1080 + music_score_offset_x, 390 + music_score_offset_y))
 
-    # print chord (waterfall mode)
-    if mode_id == 0 or mode_id == 2 or mode_id == 3:
+    # print chord (waterfall single mode)
+    if mode_id == 0 or mode_id == 3 or mode_id == 4:
         if print_chord == 1:
             screen.blit(chord_text, (50, global_resolution_y - 305))
         if print_chord == 2:
@@ -917,7 +962,7 @@ while True:
             screen.blit(chord_text, (50, (global_resolution_y / 2) - 120))
 
     # print notes in list
-    if mode_id == 1 or mode_id == 4:
+    if mode_id == 1 or mode_id == 2 or mode_id == 5 or mode_id == 6 or mode_id == 7:
         note_transfer = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
         modify_transfer = ['', 'bb', 'b', '#', 'x']
         note_to_print = []
@@ -943,8 +988,8 @@ while True:
         screen.blit(note_list_text_bt, (1080 + music_score_offset_x, 505 + music_score_offset_y))
         screen.blit(note_list_text, (1080 + music_score_offset_x, 575 + music_score_offset_y))
 
-    # print musicsheets and notes (music score mode)
-    if mode_id == 1 or mode_id == 4:
+    # print musicsheets and notes (music score)
+    if mode_id == 1 or mode_id == 2 or mode_id == 5 or mode_id == 6 or mode_id == 7:
         screen.blit(sheet_w, (-210 + music_score_offset_x, -230 + music_score_offset_y))
         highest_note = -1
         lowest_note = -1
@@ -1286,39 +1331,6 @@ while True:
                     if k == draw_line_high[0]:
                         stop_draw_high = True
 
-    # print waterfalls (mode 0 or 2)
-    if mode_id == 0 or mode_id == 2:
-        for i in range(88):
-            for j in waterfalls[i]:
-                pygame.draw.rect(screen, NTcol, (waterfall_pos1[i], global_resolution_y - 200 - j[1], 18, j[1] - j[0]),
-                                 0, border_radius=3)
-                pygame.draw.rect(screen, NTcol2, (waterfall_pos2[i], global_resolution_y - 199 - j[1],
-                                                  16, j[1] - j[0] - 2),
-                                 0, border_radius=3)
-
-    # print waterfalls (mode 3)
-    if mode_id == 3:
-        for i in range(88):
-            if len(waterfalls[i]) > 0:
-                if waterfalls[i][0][0] <= (global_resolution_y - 200) <= waterfalls[i][0][1]:
-                    if appended[i] == 0:
-                        key_note.append(i)
-                        if midi2 != 'Unable':
-                            midi2.note_on(i + 21, waterfalls[i][0][2])
-                        notes_count[i % 12] += 1
-                        all_note_size += 1
-                        appended[i] = 1
-                elif waterfalls[i][0][0] > (global_resolution_y - 200):
-                    if appended[i] == 1:
-                        key_note.remove(i)
-                        if midi2 != 'Unable':
-                            midi2.note_off(i + 21)
-                        appended[i] = 0
-                    waterfalls[i].pop(0)
-            for j in waterfalls[i]:
-                pygame.draw.rect(screen, NTcol, (waterfall_pos1[i], j[0], 18, j[1] - j[0]), 0, border_radius=3)
-                pygame.draw.rect(screen, NTcol2, (waterfall_pos2[i], j[0] + 1, 16, j[1] - j[0] - 2), 0, border_radius=3)
-
     # print bottom color
     pygame.draw.rect(screen, (160, 160, 180), (0, global_resolution_y - 200, global_resolution_x, 200), 0)
 
@@ -1393,13 +1405,14 @@ while True:
                 auto_major_key = 1
                 major_key_print = font1.render(str('Majorkey: ' + major_key), True, major_key_text_color)
             elif event.key == pygame.K_m:
-                if mode_id == 1:
-                    mode_id = 0
-                    print_trans_screen = False
-                    waterfalls = [[] for i in range(88)]
-                elif mode_id == 0:
-                    mode_id = 1
-                    print_trans_screen = True
+                if mode_id <= 2:
+                    mode_id += 1
+                    if mode_id > 2:
+                        mode_id -= 3
+                    if mode_id == 0:
+                        print_trans_screen = False
+                    else:
+                        print_trans_screen = True
                     waterfalls = [[] for i in range(88)]
             elif event.key == pygame.K_c:
                 if major_key == 'Unsettled':
@@ -1473,6 +1486,7 @@ while True:
                 if bkg_set >= bkg_num:
                     bkg_set -= bkg_num
                 bkg = pygame.image.load(background_folder_path + '/' + all_bkg_name[bkg_set]).convert()
+                bkg_trans.blit(bkg, (background_offset_x, background_offset_y - 85))
             elif event.key == pygame.K_q:
                 if_exit = 1
                 # 卸载所有模块
