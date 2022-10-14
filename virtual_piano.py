@@ -816,6 +816,9 @@ while True:
                 notes_count[global_events[cur_pos][1] % 12] += 1
                 all_note_size += 1
                 if mode_id == 3 or mode_id == 6:
+                    if len(waterfalls[global_events[cur_pos][1]]) > 0:
+                        if waterfalls[global_events[cur_pos][1]][-1][0] == 0:
+                            waterfalls[global_events[cur_pos][1]][-1][0] = 1
                     waterfalls[global_events[cur_pos][1]].append([0, 0])
             elif global_events[cur_pos][0] == 0:
                 if midi2 != 'Unable':
@@ -834,6 +837,9 @@ while True:
     if finished == 0 and (mode_id == 4 or mode_id == 7):
         while global_events[cur_pos][2] <= global_time_delta:
             if global_events[cur_pos][0] == 1:
+                if len(waterfalls[global_events[cur_pos][1]]) > 0:
+                    if waterfalls[global_events[cur_pos][1]][-1][0] == 0:
+                        waterfalls[global_events[cur_pos][1]][-1][0] = 1
                 waterfalls[global_events[cur_pos][1]].append([0, 0, global_events[cur_pos][3]])
             elif global_events[cur_pos][0] == 0:
                 waterfalls[global_events[cur_pos][1]][len(waterfalls[global_events[cur_pos][1]]) - 1][0] = 1
