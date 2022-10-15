@@ -13,6 +13,7 @@ import tkinter as tk
 from tkinter import ttk
 import configparser
 import ctypes
+import random
 
 config = configparser.ConfigParser()
 path = 'global_settings.ini'
@@ -35,6 +36,7 @@ BKcol_on_sus = (config.getint('BlackKeyOnSustain', 'BKcol_sus_R'), config.getint
                 config.getint('BlackKeyOnSustain', 'BKcol_sus_B'))  # 踏板按下，黑键松开
 NTcol2 = (config.getint('WaterFallColor2', 'NTcol2_R'), config.getint('WaterFallColor2', 'NTcol2_G'),
           config.getint('WaterFallColor2', 'NTcol2_B'))  # 瀑布流
+random_waterfall_color = config.getfloat('RandomWaterFallColor', 'random_waterfall_color')
 time_delta = config.getfloat('TimeDelta', 'time_delta')  # 速度微调（播放MIDI用）
 root_delta = config.getfloat('RootDelta', 'root_delta')  # 根音与音符出现的时间差（MODE2专用）
 chord_text_color = (
@@ -61,8 +63,10 @@ trans_screen_color = (
     config.getint('TransScreenColor', 'trans_screen_color_R'),
     config.getint('TransScreenColor', 'trans_screen_color_G'),
     config.getint('TransScreenColor', 'trans_screen_color_B'))  # 顶端矩形颜色
+transparent_or_not = config.getint('TransparentOrNot', 'transparent_or_not')
 trans_screen_opacity = config.getint('TransScreenOpacity', 'trans_screen_opacity')
-waterfall_opacity = config.getint('WaterFallOpacityForMixedMode', 'waterfall_opacity_for_mixed_mode')
+waterfall_opacity = config.getint('WaterFallOpacity', 'waterfall_opacity')
+piano_key_opacity = config.getint('PianoKeyOpacity', 'piano_key_opacity')
 top_square_opacity = config.getint('TopSquareOpacity', 'top_square_opacity')
 global_resolution_x = config.getint('GlobalResolution', 'global_resolution_x')  # 分辨率x（修改可能显示不正常）
 global_resolution_y = config.getint('GlobalResolution', 'global_resolution_y')  # 分辨率y
@@ -264,9 +268,15 @@ bkg = pygame.image.load(background_folder_path + '/' + all_bkg_name[bkg_set]).co
 screen.blit(bkg, (background_offset_x, background_offset_y))
 
 # 透明效果
-bkg_trans = pygame.Surface((1920, 915))
-bkg_trans.set_alpha(waterfall_opacity)
-bkg_trans.blit(bkg, (background_offset_x, background_offset_y - 85))
+bkg_trans_up = pygame.Surface((global_resolution_x, 85))
+bkg_trans_up.set_alpha(top_square_opacity)
+bkg_trans_middle = pygame.Surface((global_resolution_x, global_resolution_y - 285))
+bkg_trans_middle.set_alpha(waterfall_opacity)
+bkg_trans_down = pygame.Surface((global_resolution_x, 200))
+bkg_trans_down.set_alpha(piano_key_opacity)
+bkg_trans_up.blit(bkg, (background_offset_x, background_offset_y))
+bkg_trans_middle.blit(bkg, (background_offset_x, background_offset_y - 85))
+bkg_trans_down.blit(bkg, (background_offset_x, background_offset_y - (global_resolution_y - 200)))
 
 # 音符、五线谱
 sheet_w = pygame.image.load('music_score/musicsheets_w.png').convert_alpha()
@@ -288,14 +298,9 @@ double_flat_w_trans = pygame.image.load('music_score/double_flat_w_trans.png').c
 restore_w_trans = pygame.image.load('music_score/restore_w_trans.png').convert_alpha()
 
 # 透明遮挡层
-trans_screen = pygame.Surface((global_resolution_x, global_resolution_y - 85))
+trans_screen = pygame.Surface((global_resolution_x, global_resolution_y - 285))
 trans_screen.set_alpha(trans_screen_opacity)
 trans_screen.fill(trans_screen_color)
-
-# 顶端矩形
-trans_top_square = pygame.Surface((global_resolution_x, 85))
-trans_top_square.set_alpha(top_square_opacity)
-trans_top_square.fill(top_square_color)
 
 # 相关全局变量
 root = -1
@@ -707,7 +712,7 @@ def input_midi():
                 all_note_size += 1
                 key_note.append(c[0][0][1] - 21)
                 if mode_id == 0 or mode_id == 2:
-                    waterfalls[c[0][0][1] - 21].append([0, 0])
+                    waterfalls[c[0][0][1] - 21].append([0, 0, 0, get_wf_color()])
             elif c[0][0][0] == 128:
                 if sustain == 0:
                     if midi2 != 'Unable':
@@ -754,6 +759,18 @@ def get_chord_run():
         else:
             chord_text = chord_font.render(cur_chord, True, chord_text_color)
         time.sleep(0.1)
+
+
+# 随机或不随机获取瀑布流颜色
+def get_wf_color():
+    global random_waterfall_color
+    if random_waterfall_color == 1:
+        a = random.randint(150, 215)
+        b = random.randint(175, 225)
+        c = random.randint(190, 235)
+        return [(a, b, c), (a + 20, b + 20, c + 20)]
+    else:
+        return [NTcol, NTcol2]
 
 
 # 若为MIDI播放模式，则读取音符
@@ -803,6 +820,8 @@ else:
 
 # pygame主循环
 while True:
+
+    # refresh time
     global_time = get_u_second() - base_time
     global_time_delta = int(global_time * time_delta / 10000)
 
@@ -819,7 +838,7 @@ while True:
                     if len(waterfalls[global_events[cur_pos][1]]) > 0:
                         if waterfalls[global_events[cur_pos][1]][-1][0] == 0:
                             waterfalls[global_events[cur_pos][1]][-1][0] = 1
-                    waterfalls[global_events[cur_pos][1]].append([0, 0])
+                    waterfalls[global_events[cur_pos][1]].append([0, 0, 0, get_wf_color()])
             elif global_events[cur_pos][0] == 0:
                 if midi2 != 'Unable':
                     midi2.note_off(global_events[cur_pos][1] + 21)
@@ -840,7 +859,7 @@ while True:
                 if len(waterfalls[global_events[cur_pos][1]]) > 0:
                     if waterfalls[global_events[cur_pos][1]][-1][0] == 0:
                         waterfalls[global_events[cur_pos][1]][-1][0] = 1
-                waterfalls[global_events[cur_pos][1]].append([0, 0, global_events[cur_pos][3]])
+                waterfalls[global_events[cur_pos][1]].append([0, 0, global_events[cur_pos][3], get_wf_color()])
             elif global_events[cur_pos][0] == 0:
                 waterfalls[global_events[cur_pos][1]][len(waterfalls[global_events[cur_pos][1]]) - 1][0] = 1
             cur_pos += 1
@@ -921,9 +940,9 @@ while True:
     if mode_id == 0 or mode_id == 2 or mode_id == 3 or mode_id == 6:
         for i in range(88):
             for j in waterfalls[i]:
-                pygame.draw.rect(screen, NTcol, (waterfall_pos1[i], global_resolution_y - 200 - j[1], 18, j[1] - j[0]),
+                pygame.draw.rect(screen, j[3][0], (waterfall_pos1[i], global_resolution_y - 200 - j[1], 18, j[1] - j[0]),
                                  0, border_radius=3)
-                pygame.draw.rect(screen, NTcol2, (waterfall_pos2[i], global_resolution_y - 199 - j[1],
+                pygame.draw.rect(screen, j[3][1], (waterfall_pos2[i], global_resolution_y - 199 - j[1],
                                                   16, j[1] - j[0] - 2),
                                  0, border_radius=3)
 
@@ -947,12 +966,42 @@ while True:
                         appended[i] = 0
                     waterfalls[i].pop(0)
             for j in waterfalls[i]:
-                pygame.draw.rect(screen, NTcol, (waterfall_pos1[i], j[0], 18, j[1] - j[0]), 0, border_radius=3)
-                pygame.draw.rect(screen, NTcol2, (waterfall_pos2[i], j[0] + 1, 16, j[1] - j[0] - 2), 0, border_radius=3)
+                pygame.draw.rect(screen, j[3][0], (waterfall_pos1[i], j[0], 18, j[1] - j[0]), 0, border_radius=3)
+                pygame.draw.rect(screen, j[3][1], (waterfall_pos2[i], j[0] + 1, 16, j[1] - j[0] - 2), 0, border_radius=3)
 
-    # print transparent background (mixed mode only)
-    if mode_id == 2 or mode_id == 6 or mode_id == 7:
-        screen.blit(bkg_trans, (background_offset_x, background_offset_y + 85))
+    # print bottom color
+    pygame.draw.rect(screen, (160, 160, 180), (0, global_resolution_y - 200, global_resolution_x, 200), 0)
+
+    # print piano keys
+    for i in range(52):
+        pygame.draw.rect(screen, 'white', (white_key_pos[white_key_reflect[i]], global_resolution_y - 203, 34, 201), 0)
+    for i in key_note:
+        if white_key_or_not[i] == 1:
+            pygame.draw.rect(screen, WKcol, (white_key_pos[i] + 0, global_resolution_y - 203, 34, 201), 0)
+    for h in on_sustain:
+        i = h - 21
+        if white_key_or_not[i] == 1:
+            pygame.draw.rect(screen, WKcol_on_sus, (white_key_pos[i] + 0, global_resolution_y - 203, 34, 201), 0)
+    for i in range(36):
+        pygame.draw.rect(screen, 'black', (black_key_pos1[black_key_reflect[i]], global_resolution_y - 200, 20, 130), 0)
+        pygame.draw.rect(screen, (75, 75, 75),
+                         (black_key_pos2[black_key_reflect[i]], global_resolution_y - 200, 15, 120), 0)
+    for i in key_note:
+        if white_key_or_not[i] == 0:
+            pygame.draw.rect(screen, (105, 110, 175), (black_key_pos1[i], global_resolution_y - 200, 20, 130), 0)
+            pygame.draw.rect(screen, BKcol, (black_key_pos2[i] + 1, global_resolution_y - 200, 14, 123), 0)
+    for h in on_sustain:
+        i = h - 21
+        if white_key_or_not[i] == 0:
+            pygame.draw.rect(screen, (105, 110, 175), (black_key_pos1[i], global_resolution_y - 200, 20, 130), 0)
+            pygame.draw.rect(screen, BKcol_on_sus, (black_key_pos2[i] + 1, global_resolution_y - 200, 14, 123), 0)
+
+    pygame.draw.rect(screen, (100, 100, 100), (0, global_resolution_y - 203, global_resolution_x, 3), 0)
+
+    # print transparent background
+    if transparent_or_not == 1:
+        screen.blit(bkg_trans_middle, (0, 85))
+        screen.blit(bkg_trans_down, (0, global_resolution_y - 200))
 
     # print chord (with music score)
     if mode_id == 1 or mode_id == 2 or mode_id == 5 or mode_id == 6 or mode_id == 7:
@@ -1337,35 +1386,6 @@ while True:
                     if k == draw_line_high[0]:
                         stop_draw_high = True
 
-    # print bottom color
-    pygame.draw.rect(screen, (160, 160, 180), (0, global_resolution_y - 200, global_resolution_x, 200), 0)
-
-    # print piano keys
-    for i in range(52):
-        pygame.draw.rect(screen, 'white', (white_key_pos[white_key_reflect[i]], global_resolution_y - 203, 34, 201), 0)
-    for i in key_note:
-        if white_key_or_not[i] == 1:
-            pygame.draw.rect(screen, WKcol, (white_key_pos[i] + 0, global_resolution_y - 203, 34, 201), 0)
-    for h in on_sustain:
-        i = h - 21
-        if white_key_or_not[i] == 1:
-            pygame.draw.rect(screen, WKcol_on_sus, (white_key_pos[i] + 0, global_resolution_y - 203, 34, 201), 0)
-    for i in range(36):
-        pygame.draw.rect(screen, 'black', (black_key_pos1[black_key_reflect[i]], global_resolution_y - 200, 20, 130), 0)
-        pygame.draw.rect(screen, (75, 75, 75),
-                         (black_key_pos2[black_key_reflect[i]], global_resolution_y - 200, 15, 120), 0)
-    for i in key_note:
-        if white_key_or_not[i] == 0:
-            pygame.draw.rect(screen, (105, 110, 175), (black_key_pos1[i], global_resolution_y - 200, 20, 130), 0)
-            pygame.draw.rect(screen, BKcol, (black_key_pos2[i] + 1, global_resolution_y - 200, 14, 123), 0)
-    for h in on_sustain:
-        i = h - 21
-        if white_key_or_not[i] == 0:
-            pygame.draw.rect(screen, (105, 110, 175), (black_key_pos1[i], global_resolution_y - 200, 20, 130), 0)
-            pygame.draw.rect(screen, BKcol_on_sus, (black_key_pos2[i] + 1, global_resolution_y - 200, 14, 123), 0)
-
-    pygame.draw.rect(screen, (100, 100, 100), (0, global_resolution_y - 203, global_resolution_x, 3), 0)
-
     # print square
     font_distance = {
         'Unsettled': 99999,
@@ -1384,10 +1404,11 @@ while True:
     }
 
     # 顶端矩形
-    if top_square_opacity == 0 or top_square_opacity >= 255:
-        pygame.draw.rect(screen, top_square_color, (0, 0, global_resolution_x, 85), 0)
-    else:
-        screen.blit(trans_top_square, (0, 0))
+    pygame.draw.rect(screen, top_square_color, (0, 0, global_resolution_x, 85), 0)
+    
+    # 顶端矩形透明度调整（背景覆盖）
+    if transparent_or_not == 1:
+        screen.blit(bkg_trans_up, (0, 0))
     
     # 显示文字内容
     screen.blit(sustain_label, (global_resolution_x - 295, 18))
@@ -1485,14 +1506,20 @@ while True:
                     print_chord = 0
             elif event.key == pygame.K_d:
                 auto_major_key = 0
-            elif event.key == pygame.K_t:
+            elif event.key == pygame.K_s:
                 print_trans_screen = not print_trans_screen
+            elif event.key == pygame.K_t:
+                transparent_or_not = 1 - transparent_or_not
+            elif event.key == pygame.K_r:
+                random_waterfall_color = 1 - random_waterfall_color
             elif event.key == pygame.K_g:
                 bkg_set += 1
                 if bkg_set >= bkg_num:
                     bkg_set -= bkg_num
                 bkg = pygame.image.load(background_folder_path + '/' + all_bkg_name[bkg_set]).convert()
-                bkg_trans.blit(bkg, (background_offset_x, background_offset_y - 85))
+                bkg_trans_up.blit(bkg, (background_offset_x, background_offset_y))
+                bkg_trans_middle.blit(bkg, (background_offset_x, background_offset_y - 85))
+                bkg_trans_down.blit(bkg, (background_offset_x, background_offset_y - (global_resolution_y - 200)))
             elif event.key == pygame.K_q:
                 if_exit = 1
                 # 卸载所有模块

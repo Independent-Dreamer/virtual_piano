@@ -14,7 +14,11 @@ https://www.bilibili.com/video/BV1D8411x78X
 
 1.将自定义图片保存至backgrounds文件夹，运行时按G切换背景图片
 
-2.按T选择开启/关闭背景前透明矩形（方便显示，默认五线谱模式开启，瀑布流模式关闭）
+2.按S选择开启/关闭背景前透明矩形（方便显示，默认五线谱模式开启，瀑布流模式关闭）
+
+3.按T选择瀑布流、键盘、顶端矩形透明或不透明
+
+4.按R开启或关闭瀑布流颜色随机模式
 
 3.按D取消调性自动识别（离调和弦密集、特殊调式识别不准确时用）
 
@@ -48,6 +52,8 @@ root_file_path          当set_root_from_file = 1时，从指定midi文件读取
 
 [BlackKeyColor]         黑色琴键按下时显示的颜色RGB值
 
+random_waterfall_color       是否开启瀑布流颜色随机模式
+
 [WaterFallColor]        瀑布流外轮廓颜色RGB值
 
 [WaterFallColor2]       瀑布流颜色RGB值
@@ -70,11 +76,15 @@ root_file_path          当set_root_from_file = 1时，从指定midi文件读取
 
 [TransScreenColor]      背景前透明矩形颜色RGB值
 
+transparent_or_not       是否默认瀑布流、顶端矩形、键盘透明
+
 trans_screen_opacity    背景前透明矩形透明度
 
 top_square_opacity      顶端矩形透明度
 
-waterfall_opacity_for_mixed_mode      瀑布流透明度（仅瀑布流+五线谱both模式下有效）
+waterfall_opacity      瀑布流透明度
+
+piano_key_opacity      键盘透明度
 
 [GlobalResolution]      全局分辨率（默认1920x1200，更改分辨率为裁剪而非缩放，需要修改offset）
 
