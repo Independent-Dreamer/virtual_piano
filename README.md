@@ -99,3 +99,7 @@ root_delta              当set_root_from_file = 1时，该值为待播放midi文
 4.存在一些不规范的记谱（非错误，不严谨但是不影响识谱）
 
 5.midi仅支持单轨，不支持变速MIDI播放
+
+6.无法直观调节BPM（可通过global_settings中的time_delta更改）
+
+7.MIDI播放时声音略有错位（有些音偏前有些音偏后，midi音符密集时这种情况很显著，推荐宿主单独导出音频，之后用Pr等软件将音轨与视频轨对齐导出）
