@@ -28,15 +28,26 @@ WKcol = (config.getint('WhiteKeyColor', 'WKcol_R'), config.getint('WhiteKeyColor
          config.getint('WhiteKeyColor', 'WKcol_B'))  # 白键按下
 BKcol = (config.getint('BlackKeyColor', 'BKcol_R'), config.getint('BlackKeyColor', 'BKcol_G'),
          config.getint('BlackKeyColor', 'BKcol_B'))  # 黑键按下
-NTcol = (config.getint('WaterFallColor', 'NTcol_R'), config.getint('WaterFallColor', 'NTcol_G'),
-         config.getint('WaterFallColor', 'NTcol_B'))  # 瀑布流
+NTcol_outline = (config.getint('WaterFallColorMain', 'outline_R'), config.getint('WaterFallColorMain', 'outline_G'),
+         config.getint('WaterFallColorMain', 'outline_B'))  # 瀑布流
+NTcol_fill = (config.getint('WaterFallColorMain', 'fill_R'), config.getint('WaterFallColorMain', 'fill_G'),
+          config.getint('WaterFallColorMain', 'fill_B'))  # 瀑布流
+NTcol2_outline = (config.getint('WaterFallColor2', 'outline_R'), config.getint('WaterFallColor2', 'outline_G'),
+         config.getint('WaterFallColor2', 'outline_B'))  # 瀑布流
+NTcol2_fill = (config.getint('WaterFallColor2', 'fill_R'), config.getint('WaterFallColor2', 'fill_G'),
+          config.getint('WaterFallColor2', 'fill_B'))  # 瀑布流
+NTcol3_outline = (config.getint('WaterFallColor3', 'outline_R'), config.getint('WaterFallColor3', 'outline_G'),
+         config.getint('WaterFallColor3', 'outline_B'))  # 瀑布流
+NTcol3_fill = (config.getint('WaterFallColor3', 'fill_R'), config.getint('WaterFallColor3', 'fill_G'),
+          config.getint('WaterFallColor3', 'fill_B'))  # 瀑布流
+color_boundary_left = config.getint('ColorBoundary', 'color_boundary_left')
+color_boundary_middle = config.getint('ColorBoundary', 'color_boundary_middle')
+color_boundary_right = config.getint('ColorBoundary', 'color_boundary_right')
 WKcol_on_sus = (config.getint('WhiteKeyOnSustain', 'WKcol_sus_R'), config.getint('WhiteKeyOnSustain', 'WKcol_sus_G'),
                 config.getint('WhiteKeyOnSustain', 'WKcol_sus_B'))  # 踏板按下，白键松开
 BKcol_on_sus = (config.getint('BlackKeyOnSustain', 'BKcol_sus_R'), config.getint('BlackKeyOnSustain', 'BKcol_sus_G'),
                 config.getint('BlackKeyOnSustain', 'BKcol_sus_B'))  # 踏板按下，黑键松开
-NTcol2 = (config.getint('WaterFallColor2', 'NTcol2_R'), config.getint('WaterFallColor2', 'NTcol2_G'),
-          config.getint('WaterFallColor2', 'NTcol2_B'))  # 瀑布流
-random_waterfall_color = config.getfloat('RandomWaterFallColor', 'random_waterfall_color')
+waterfall_color_control = config.getfloat('WaterFallColorControl', 'waterfall_color_control')
 time_delta = config.getfloat('TimeDelta', 'time_delta')  # 速度微调（播放MIDI用）
 root_delta = config.getfloat('RootDelta', 'root_delta')  # 根音与音符出现的时间差（MODE2专用）
 chord_text_color = (
@@ -712,7 +723,7 @@ def input_midi():
                 all_note_size += 1
                 key_note.append(c[0][0][1] - 21)
                 if mode_id == 0 or mode_id == 2:
-                    waterfalls[c[0][0][1] - 21].append([0, 0, 0, get_wf_color()])
+                    waterfalls[c[0][0][1] - 21].append([0, 0, 0, get_wf_color(c[0][0][1] - 21)])
             elif c[0][0][0] == 128:
                 if sustain == 0:
                     if midi2 != 'Unable':
@@ -762,15 +773,54 @@ def get_chord_run():
 
 
 # 随机或不随机获取瀑布流颜色
-def get_wf_color():
-    global random_waterfall_color
-    if random_waterfall_color == 1:
+def get_wf_color(key_pos):
+    global waterfall_color_control
+    if waterfall_color_control == 3:
         a = random.randint(150, 215)
         b = random.randint(175, 225)
         c = random.randint(190, 235)
         return [(a, b, c), (a + 20, b + 20, c + 20)]
+    elif waterfall_color_control == 2:
+        # main color
+        r_out = NTcol_outline[0]
+        g_out = NTcol_outline[1]
+        b_out = NTcol_outline[2]
+        r_fill = NTcol_fill[0]
+        g_fill = NTcol_fill[1]
+        b_fill = NTcol_fill[2]
+        # color 2
+        r2_out = NTcol2_outline[0]
+        g2_out = NTcol2_outline[1]
+        b2_out = NTcol2_outline[2]
+        r2_fill = NTcol2_fill[0]
+        g2_fill = NTcol2_fill[1]
+        b2_fill = NTcol2_fill[2]
+        # color 3
+        r3_out = NTcol3_outline[0]
+        g3_out = NTcol3_outline[1]
+        b3_out = NTcol3_outline[2]
+        r3_fill = NTcol3_fill[0]
+        g3_fill = NTcol3_fill[1]
+        b3_fill = NTcol3_fill[2]
+        if key_pos < color_boundary_left:
+            return [(r3_out, g3_out, b3_out), (r3_fill, g3_fill, b3_fill)]
+        elif key_pos > color_boundary_right:
+            return [(r_out, g_out, b_out), (r_fill, g_fill, b_fill)]
+        else:
+            return [(r2_out, g2_out, b2_out), (r2_fill, g2_fill, b2_fill)]
+    elif waterfall_color_control == 1:
+        r = NTcol_outline[0]
+        g = NTcol_outline[1]
+        b = NTcol_outline[2]
+        r1 = NTcol_fill[0]
+        g1 = NTcol_fill[1]
+        b1 = NTcol_fill[2]
+        if key_pos < color_boundary_middle:
+            return [(b, r, g), (b1, r1, g1)]
+        else:
+            return [(r, g, b), (r1, g1, b1)]
     else:
-        return [NTcol, NTcol2]
+        return [NTcol_outline, NTcol_fill]
 
 
 # 若为MIDI播放模式，则读取音符
@@ -838,7 +888,7 @@ while True:
                     if len(waterfalls[global_events[cur_pos][1]]) > 0:
                         if waterfalls[global_events[cur_pos][1]][-1][0] == 0:
                             waterfalls[global_events[cur_pos][1]][-1][0] = 1
-                    waterfalls[global_events[cur_pos][1]].append([0, 0, 0, get_wf_color()])
+                    waterfalls[global_events[cur_pos][1]].append([0, 0, 0, get_wf_color(global_events[cur_pos][1])])
             elif global_events[cur_pos][0] == 0:
                 if midi2 != 'Unable':
                     midi2.note_off(global_events[cur_pos][1] + 21)
@@ -859,7 +909,8 @@ while True:
                 if len(waterfalls[global_events[cur_pos][1]]) > 0:
                     if waterfalls[global_events[cur_pos][1]][-1][0] == 0:
                         waterfalls[global_events[cur_pos][1]][-1][0] = 1
-                waterfalls[global_events[cur_pos][1]].append([0, 0, global_events[cur_pos][3], get_wf_color()])
+                waterfalls[global_events[cur_pos][1]].append([0, 0, global_events[cur_pos][3], 
+                                                             get_wf_color(global_events[cur_pos][1])])
             elif global_events[cur_pos][0] == 0:
                 waterfalls[global_events[cur_pos][1]][len(waterfalls[global_events[cur_pos][1]]) - 1][0] = 1
             cur_pos += 1
@@ -936,6 +987,9 @@ while True:
     if print_trans_screen:
         screen.blit(trans_screen, (0, 85))
 
+    # print black line above piano keys
+    pygame.draw.rect(screen, (100, 100, 100), (0, global_resolution_y - 203, global_resolution_x, 3), 0)
+
     # print waterfalls (waterfall up)
     if mode_id == 0 or mode_id == 2 or mode_id == 3 or mode_id == 6:
         for i in range(88):
@@ -974,14 +1028,14 @@ while True:
 
     # print piano keys
     for i in range(52):
-        pygame.draw.rect(screen, 'white', (white_key_pos[white_key_reflect[i]], global_resolution_y - 203, 34, 201), 0)
+        pygame.draw.rect(screen, 'white', (white_key_pos[white_key_reflect[i]], global_resolution_y - 200, 34, 198), 0)
     for i in key_note:
         if white_key_or_not[i] == 1:
-            pygame.draw.rect(screen, WKcol, (white_key_pos[i] + 0, global_resolution_y - 203, 34, 201), 0)
+            pygame.draw.rect(screen, WKcol, (white_key_pos[i] + 0, global_resolution_y - 200, 34, 198), 0)
     for h in on_sustain:
         i = h - 21
         if white_key_or_not[i] == 1:
-            pygame.draw.rect(screen, WKcol_on_sus, (white_key_pos[i] + 0, global_resolution_y - 203, 34, 201), 0)
+            pygame.draw.rect(screen, WKcol_on_sus, (white_key_pos[i] + 0, global_resolution_y - 200, 34, 198), 0)
     for i in range(36):
         pygame.draw.rect(screen, 'black', (black_key_pos1[black_key_reflect[i]], global_resolution_y - 200, 20, 130), 0)
         pygame.draw.rect(screen, (75, 75, 75),
@@ -995,8 +1049,6 @@ while True:
         if white_key_or_not[i] == 0:
             pygame.draw.rect(screen, (105, 110, 175), (black_key_pos1[i], global_resolution_y - 200, 20, 130), 0)
             pygame.draw.rect(screen, BKcol_on_sus, (black_key_pos2[i] + 1, global_resolution_y - 200, 14, 123), 0)
-
-    pygame.draw.rect(screen, (100, 100, 100), (0, global_resolution_y - 203, global_resolution_x, 3), 0)
 
     # print transparent background
     if transparent_or_not == 1:
@@ -1411,11 +1463,11 @@ while True:
         screen.blit(bkg_trans_up, (0, 0))
     
     # 显示文字内容
-    screen.blit(sustain_label, (global_resolution_x - 295, 18))
-    screen.blit(sustain_state, (global_resolution_x - 42, 23))
-    screen.blit(major_key_print, (31, 18))
+    screen.blit(sustain_label, (global_resolution_x - 300, 18))
+    screen.blit(sustain_state, (global_resolution_x - 47, 23))
+    screen.blit(major_key_print, (36, 18))
     screen.blit(speed_print, ((global_resolution_x / 2) - 120, 18))
-    screen.blit(tonicization_print, (255 + font_distance[major_key], 25))
+    screen.blit(tonicization_print, (260 + font_distance[major_key], 25))
 
     # 循环获取事件，监听事件状态
     for event in pygame.event.get():
@@ -1511,7 +1563,9 @@ while True:
             elif event.key == pygame.K_t:
                 transparent_or_not = 1 - transparent_or_not
             elif event.key == pygame.K_r:
-                random_waterfall_color = 1 - random_waterfall_color
+                waterfall_color_control += 1
+                if waterfall_color_control >= 4:
+                    waterfall_color_control -= 4
             elif event.key == pygame.K_g:
                 bkg_set += 1
                 if bkg_set >= bkg_num:
