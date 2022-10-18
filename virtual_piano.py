@@ -28,21 +28,25 @@ WKcol = (config.getint('WhiteKeyColor', 'WKcol_R'), config.getint('WhiteKeyColor
          config.getint('WhiteKeyColor', 'WKcol_B'))  # 白键按下
 BKcol = (config.getint('BlackKeyColor', 'BKcol_R'), config.getint('BlackKeyColor', 'BKcol_G'),
          config.getint('BlackKeyColor', 'BKcol_B'))  # 黑键按下
+white_key_waterfall_width = config.getint('WaterFallWidth', 'white_key_waterfall_width')
+black_key_waterfall_width = config.getint('WaterFallWidth', 'black_key_waterfall_width')
 NTcol_outline = (config.getint('WaterFallColorMain', 'outline_R'), config.getint('WaterFallColorMain', 'outline_G'),
-         config.getint('WaterFallColorMain', 'outline_B'))  # 瀑布流
+                 config.getint('WaterFallColorMain', 'outline_B'))  # 瀑布流
 NTcol_fill = (config.getint('WaterFallColorMain', 'fill_R'), config.getint('WaterFallColorMain', 'fill_G'),
-          config.getint('WaterFallColorMain', 'fill_B'))  # 瀑布流
+              config.getint('WaterFallColorMain', 'fill_B'))  # 瀑布流
 NTcol2_outline = (config.getint('WaterFallColor2', 'outline_R'), config.getint('WaterFallColor2', 'outline_G'),
-         config.getint('WaterFallColor2', 'outline_B'))  # 瀑布流
+                  config.getint('WaterFallColor2', 'outline_B'))  # 瀑布流
 NTcol2_fill = (config.getint('WaterFallColor2', 'fill_R'), config.getint('WaterFallColor2', 'fill_G'),
-          config.getint('WaterFallColor2', 'fill_B'))  # 瀑布流
+               config.getint('WaterFallColor2', 'fill_B'))  # 瀑布流
 NTcol3_outline = (config.getint('WaterFallColor3', 'outline_R'), config.getint('WaterFallColor3', 'outline_G'),
-         config.getint('WaterFallColor3', 'outline_B'))  # 瀑布流
+                  config.getint('WaterFallColor3', 'outline_B'))  # 瀑布流
 NTcol3_fill = (config.getint('WaterFallColor3', 'fill_R'), config.getint('WaterFallColor3', 'fill_G'),
-          config.getint('WaterFallColor3', 'fill_B'))  # 瀑布流
+               config.getint('WaterFallColor3', 'fill_B'))  # 瀑布流
 color_boundary_left = config.getint('ColorBoundary', 'color_boundary_left')
 color_boundary_middle = config.getint('ColorBoundary', 'color_boundary_middle')
 color_boundary_right = config.getint('ColorBoundary', 'color_boundary_right')
+black_color_dim_outline = config.getint('BlackColorDim', 'black_color_dim_outline')
+black_color_dim_fill = config.getint('BlackColorDim', 'black_color_dim_fill')
 WKcol_on_sus = (config.getint('WhiteKeyOnSustain', 'WKcol_sus_R'), config.getint('WhiteKeyOnSustain', 'WKcol_sus_G'),
                 config.getint('WhiteKeyOnSustain', 'WKcol_sus_B'))  # 踏板按下，白键松开
 BKcol_on_sus = (config.getint('BlackKeyOnSustain', 'BKcol_sus_R'), config.getint('BlackKeyOnSustain', 'BKcol_sus_G'),
@@ -334,8 +338,8 @@ cur_chord = ''
 auto_major_key = 1
 print_chord = 1
 if_exit = 0
-waterfall_pos1 = [0 for i in range(88)]
-waterfall_pos2 = [0 for i in range(88)]
+waterfall_pos1 = [[0, 0] for i in range(88)]
+waterfall_pos2 = [[0, 0] for i in range(88)]
 white_key_reflect = []  # 从白键编号到所有键编号
 black_key_reflect = []  # 从黑键编号到所有键编号
 white_key_pos = [0 for i in range(88)]
@@ -431,68 +435,92 @@ for i in range(88):
         # Ab
         black_key_pos1[i] = (37 * (((i - 11) * 7 / 12) + 6)) + 25 + piano_key_offset
         black_key_pos2[i] = (37 * (((i - 11) * 7 / 12) + 6)) + 27 + piano_key_offset
-
-# 瀑布流位置
+ 
+# 瀑布流位置 whitekey 21 blackkey 20
 for i in range(88):
     if i % 12 == 0:
         # A
-        waterfall_pos1[i] = 8 + (37 * (i * 7 / 12)) + piano_key_offset
-        waterfall_pos2[i] = 9 + (37 * (i * 7 / 12)) + piano_key_offset
+        waterfall_pos1[i][0] = 7 + (37 * (i * 7 / 12)) + piano_key_offset
+        waterfall_pos2[i][0] = 8 + (37 * (i * 7 / 12)) + piano_key_offset
+        waterfall_pos1[i][1] = white_key_waterfall_width
+        waterfall_pos2[i][1] = white_key_waterfall_width - 2
 
     if i % 12 == 2:
         # B
-        waterfall_pos1[i] = 8 + (37 * (((i - 2) * 7 / 12) + 1)) + piano_key_offset
-        waterfall_pos2[i] = 9 + (37 * (((i - 2) * 7 / 12) + 1)) + piano_key_offset
+        waterfall_pos1[i][0] = 9 + (37 * (((i - 2) * 7 / 12) + 1)) + piano_key_offset
+        waterfall_pos2[i][0] = 10 + (37 * (((i - 2) * 7 / 12) + 1)) + piano_key_offset
+        waterfall_pos1[i][1] = white_key_waterfall_width
+        waterfall_pos2[i][1] = white_key_waterfall_width - 2
 
     if i % 12 == 3:
         # C
-        waterfall_pos1[i] = 8 + (37 * (((i - 3) * 7 / 12) + 2)) + piano_key_offset
-        waterfall_pos2[i] = 9 + (37 * (((i - 3) * 7 / 12) + 2)) + piano_key_offset
+        waterfall_pos1[i][0] = 4 + (37 * (((i - 3) * 7 / 12) + 2)) + piano_key_offset
+        waterfall_pos2[i][0] = 5 + (37 * (((i - 3) * 7 / 12) + 2)) + piano_key_offset
+        waterfall_pos1[i][1] = white_key_waterfall_width
+        waterfall_pos2[i][1] = white_key_waterfall_width - 2
 
     if i % 12 == 5:
         # D
-        waterfall_pos1[i] = 8 + (37 * (((i - 5) * 7 / 12) + 3)) + piano_key_offset
-        waterfall_pos2[i] = 9 + (37 * (((i - 5) * 7 / 12) + 3)) + piano_key_offset
+        waterfall_pos1[i][0] = 6 + (37 * (((i - 5) * 7 / 12) + 3)) + piano_key_offset
+        waterfall_pos2[i][0] = 7 + (37 * (((i - 5) * 7 / 12) + 3)) + piano_key_offset
+        waterfall_pos1[i][1] = white_key_waterfall_width
+        waterfall_pos2[i][1] = white_key_waterfall_width - 2
 
     if i % 12 == 7:
         # E
-        waterfall_pos1[i] = 8 + (37 * (((i - 7) * 7 / 12) + 4)) + piano_key_offset
-        waterfall_pos2[i] = 9 + (37 * (((i - 7) * 7 / 12) + 4)) + piano_key_offset
+        waterfall_pos1[i][0] = 8 + (37 * (((i - 7) * 7 / 12) + 4)) + piano_key_offset
+        waterfall_pos2[i][0] = 9 + (37 * (((i - 7) * 7 / 12) + 4)) + piano_key_offset
+        waterfall_pos1[i][1] = white_key_waterfall_width
+        waterfall_pos2[i][1] = white_key_waterfall_width - 2
 
     if i % 12 == 8:
         # F
-        waterfall_pos1[i] = 8 + (37 * (((i - 8) * 7 / 12) + 5)) + piano_key_offset
-        waterfall_pos2[i] = 9 + (37 * (((i - 8) * 7 / 12) + 5)) + piano_key_offset
+        waterfall_pos1[i][0] = 3 + (37 * (((i - 8) * 7 / 12) + 5)) + piano_key_offset
+        waterfall_pos2[i][0] = 4 + (37 * (((i - 8) * 7 / 12) + 5)) + piano_key_offset
+        waterfall_pos1[i][1] = white_key_waterfall_width
+        waterfall_pos2[i][1] = white_key_waterfall_width - 2
 
     if i % 12 == 10:
         # G
-        waterfall_pos1[i] = 8 + (37 * (((i - 10) * 7 / 12) + 6)) + piano_key_offset
-        waterfall_pos2[i] = 9 + (37 * (((i - 10) * 7 / 12) + 6)) + piano_key_offset
+        waterfall_pos1[i][0] = 5 + (37 * (((i - 10) * 7 / 12) + 6)) + piano_key_offset
+        waterfall_pos2[i][0] = 6 + (37 * (((i - 10) * 7 / 12) + 6)) + piano_key_offset
+        waterfall_pos1[i][1] = white_key_waterfall_width
+        waterfall_pos2[i][1] = white_key_waterfall_width - 2
 
     if i % 12 == 1:
         # Bb
-        waterfall_pos1[i] = 10 + (37 * ((i - 1) * 7 / 12)) + 18 + piano_key_offset
-        waterfall_pos2[i] = 11 + (37 * ((i - 1) * 7 / 12)) + 18 + piano_key_offset
+        waterfall_pos1[i][0] = 9 + (37 * ((i - 1) * 7 / 12)) + 18 + piano_key_offset
+        waterfall_pos2[i][0] = 10 + (37 * ((i - 1) * 7 / 12)) + 18 + piano_key_offset
+        waterfall_pos1[i][1] = black_key_waterfall_width
+        waterfall_pos2[i][1] = black_key_waterfall_width - 2
 
     if i % 12 == 4:
         # Db
-        waterfall_pos1[i] = 11 + (37 * (((i - 4) * 7 / 12) + 2)) + 14 + piano_key_offset
-        waterfall_pos2[i] = 12 + (37 * (((i - 4) * 7 / 12) + 2)) + 14 + piano_key_offset
+        waterfall_pos1[i][0] = 10 + (37 * (((i - 4) * 7 / 12) + 2)) + 14 + piano_key_offset
+        waterfall_pos2[i][0] = 11 + (37 * (((i - 4) * 7 / 12) + 2)) + 14 + piano_key_offset
+        waterfall_pos1[i][1] = black_key_waterfall_width
+        waterfall_pos2[i][1] = black_key_waterfall_width - 2
 
     if i % 12 == 6:
         # Eb
-        waterfall_pos1[i] = 9 + (37 * (((i - 6) * 7 / 12) + 3)) + 18 + piano_key_offset
-        waterfall_pos2[i] = 10 + (37 * (((i - 6) * 7 / 12) + 3)) + 18 + piano_key_offset
+        waterfall_pos1[i][0] = 8 + (37 * (((i - 6) * 7 / 12) + 3)) + 18 + piano_key_offset
+        waterfall_pos2[i][0] = 9 + (37 * (((i - 6) * 7 / 12) + 3)) + 18 + piano_key_offset
+        waterfall_pos1[i][1] = black_key_waterfall_width
+        waterfall_pos2[i][1] = black_key_waterfall_width - 2
 
     if i % 12 == 9:
         # Gb
-        waterfall_pos1[i] = 10 + (37 * (((i - 9) * 7 / 12) + 5)) + 14 + piano_key_offset
-        waterfall_pos2[i] = 11 + (37 * (((i - 9) * 7 / 12) + 5)) + 14 + piano_key_offset
+        waterfall_pos1[i][0] = 9 + (37 * (((i - 9) * 7 / 12) + 5)) + 14 + piano_key_offset
+        waterfall_pos2[i][0] = 10 + (37 * (((i - 9) * 7 / 12) + 5)) + 14 + piano_key_offset
+        waterfall_pos1[i][1] = black_key_waterfall_width
+        waterfall_pos2[i][1] = black_key_waterfall_width - 2
 
     if i % 12 == 11:
         # Ab
-        waterfall_pos1[i] = 10 + (37 * (((i - 11) * 7 / 12) + 6)) + 16 + piano_key_offset
-        waterfall_pos2[i] = 11 + (37 * (((i - 11) * 7 / 12) + 6)) + 16 + piano_key_offset
+        waterfall_pos1[i][0] = 9 + (37 * (((i - 11) * 7 / 12) + 6)) + 16 + piano_key_offset
+        waterfall_pos2[i][0] = 10 + (37 * (((i - 11) * 7 / 12) + 6)) + 16 + piano_key_offset
+        waterfall_pos1[i][1] = black_key_waterfall_width
+        waterfall_pos2[i][1] = black_key_waterfall_width - 2
 
 # 各调的Note集合
 major_key_note_list = {
@@ -775,11 +803,17 @@ def get_chord_run():
 # 随机或不随机获取瀑布流颜色
 def get_wf_color(key_pos):
     global waterfall_color_control
+    to_return = [[0, 0, 0], [0, 0, 0]]
     if waterfall_color_control == 3:
         a = random.randint(150, 215)
         b = random.randint(175, 225)
         c = random.randint(190, 235)
-        return [(a, b, c), (a + 20, b + 20, c + 20)]
+        to_return[0][0] = a
+        to_return[0][1] = b
+        to_return[0][2] = c
+        to_return[1][0] = a + 20
+        to_return[1][1] = b + 20
+        to_return[1][2] = c + 20
     elif waterfall_color_control == 2:
         # main color
         r_out = NTcol_outline[0]
@@ -803,24 +837,64 @@ def get_wf_color(key_pos):
         g3_fill = NTcol3_fill[1]
         b3_fill = NTcol3_fill[2]
         if key_pos < color_boundary_left:
-            return [(r3_out, g3_out, b3_out), (r3_fill, g3_fill, b3_fill)]
+            to_return[0][0] = r3_out
+            to_return[0][1] = g3_out
+            to_return[0][2] = b3_out
+            to_return[1][0] = r3_fill
+            to_return[1][1] = g3_fill
+            to_return[1][2] = b3_fill
         elif key_pos > color_boundary_right:
-            return [(r_out, g_out, b_out), (r_fill, g_fill, b_fill)]
+            to_return[0][0] = r_out
+            to_return[0][1] = g_out
+            to_return[0][2] = b_out
+            to_return[1][0] = r_fill
+            to_return[1][1] = g_fill
+            to_return[1][2] = b_fill
         else:
-            return [(r2_out, g2_out, b2_out), (r2_fill, g2_fill, b2_fill)]
+            to_return[0][0] = r2_out
+            to_return[0][1] = g2_out
+            to_return[0][2] = b2_out
+            to_return[1][0] = r2_fill
+            to_return[1][1] = g2_fill
+            to_return[1][2] = b2_fill
     elif waterfall_color_control == 1:
-        r = NTcol_outline[0]
-        g = NTcol_outline[1]
-        b = NTcol_outline[2]
-        r1 = NTcol_fill[0]
-        g1 = NTcol_fill[1]
-        b1 = NTcol_fill[2]
+        # main color
+        r_out = NTcol_outline[0]
+        g_out = NTcol_outline[1]
+        b_out = NTcol_outline[2]
+        r_fill = NTcol_fill[0]
+        g_fill = NTcol_fill[1]
+        b_fill = NTcol_fill[2]
+        # color 3
+        r3_out = NTcol3_outline[0]
+        g3_out = NTcol3_outline[1]
+        b3_out = NTcol3_outline[2]
+        r3_fill = NTcol3_fill[0]
+        g3_fill = NTcol3_fill[1]
+        b3_fill = NTcol3_fill[2]
         if key_pos < color_boundary_middle:
-            return [(b, r, g), (b1, r1, g1)]
+            to_return[0][0] = r3_out
+            to_return[0][1] = g3_out
+            to_return[0][2] = b3_out
+            to_return[1][0] = r3_fill
+            to_return[1][1] = g3_fill
+            to_return[1][2] = b3_fill
         else:
-            return [(r, g, b), (r1, g1, b1)]
+            to_return[0][0] = r_out
+            to_return[0][1] = g_out
+            to_return[0][2] = b_out
+            to_return[1][0] = r_fill
+            to_return[1][1] = g_fill
+            to_return[1][2] = b_fill
     else:
-        return [NTcol_outline, NTcol_fill]
+        to_return[0] = NTcol_outline
+        to_return[1] = NTcol_fill
+    if white_key_or_not[key_pos] == 0:
+        to_return[0] = [to_return[0][0] - black_color_dim_outline,
+                        to_return[0][1] - black_color_dim_outline, to_return[0][2] - black_color_dim_outline]
+        to_return[1] = [to_return[1][0] - black_color_dim_fill,
+                        to_return[1][1] - black_color_dim_fill, to_return[1][2] - black_color_dim_fill]
+    return [tuple(to_return[0]), tuple(to_return[1])]
 
 
 # 若为MIDI播放模式，则读取音符
@@ -909,8 +983,8 @@ while True:
                 if len(waterfalls[global_events[cur_pos][1]]) > 0:
                     if waterfalls[global_events[cur_pos][1]][-1][0] == 0:
                         waterfalls[global_events[cur_pos][1]][-1][0] = 1
-                waterfalls[global_events[cur_pos][1]].append([0, 0, global_events[cur_pos][3], 
-                                                             get_wf_color(global_events[cur_pos][1])])
+                waterfalls[global_events[cur_pos][1]].append([0, 0, global_events[cur_pos][3],
+                                                              get_wf_color(global_events[cur_pos][1])])
             elif global_events[cur_pos][0] == 0:
                 waterfalls[global_events[cur_pos][1]][len(waterfalls[global_events[cur_pos][1]]) - 1][0] = 1
             cur_pos += 1
@@ -992,36 +1066,79 @@ while True:
 
     # print waterfalls (waterfall up)
     if mode_id == 0 or mode_id == 2 or mode_id == 3 or mode_id == 6:
+        # white key
         for i in range(88):
-            for j in waterfalls[i]:
-                pygame.draw.rect(screen, j[3][0], (waterfall_pos1[i], global_resolution_y - 200 - j[1], 18, j[1] - j[0]),
-                                 0, border_radius=3)
-                pygame.draw.rect(screen, j[3][1], (waterfall_pos2[i], global_resolution_y - 199 - j[1],
-                                                  16, j[1] - j[0] - 2),
-                                 0, border_radius=3)
+            if white_key_or_not[i] == 1:
+                for j in waterfalls[i]:
+                    pygame.draw.rect(screen, j[3][0], (
+                        waterfall_pos1[i][0], global_resolution_y - 200 - j[1], waterfall_pos1[i][1], j[1] - j[0]),
+                                     2, border_radius=3)
+                    pygame.draw.rect(screen, j[3][1], (waterfall_pos2[i][0], global_resolution_y - 199 - j[1],
+                                                       waterfall_pos2[i][1], j[1] - j[0] - 2),
+                                     0, border_radius=3)
+        # black key
+        for i in range(88):
+            if white_key_or_not[i] == 0:
+                for j in waterfalls[i]:
+                    pygame.draw.rect(screen, j[3][0], (
+                        waterfall_pos1[i][0], global_resolution_y - 200 - j[1], waterfall_pos1[i][1], j[1] - j[0]),
+                                     2, border_radius=3)
+                    pygame.draw.rect(screen, j[3][1], (waterfall_pos2[i][0], global_resolution_y - 199 - j[1],
+                                                       waterfall_pos2[i][1], j[1] - j[0] - 2),
+                                     0, border_radius=3)
 
     # print waterfalls (waterfall down)
     if mode_id == 4 or mode_id == 7:
+        # white key
         for i in range(88):
-            if len(waterfalls[i]) > 0:
-                if waterfalls[i][0][0] <= (global_resolution_y - 200) <= waterfalls[i][0][1]:
-                    if appended[i] == 0:
-                        key_note.append(i)
-                        if midi2 != 'Unable':
-                            midi2.note_on(i + 21, waterfalls[i][0][2])
-                        notes_count[i % 12] += 1
-                        all_note_size += 1
-                        appended[i] = 1
-                elif waterfalls[i][0][0] > (global_resolution_y - 200):
-                    if appended[i] == 1:
-                        key_note.remove(i)
-                        if midi2 != 'Unable':
-                            midi2.note_off(i + 21)
-                        appended[i] = 0
-                    waterfalls[i].pop(0)
-            for j in waterfalls[i]:
-                pygame.draw.rect(screen, j[3][0], (waterfall_pos1[i], j[0], 18, j[1] - j[0]), 0, border_radius=3)
-                pygame.draw.rect(screen, j[3][1], (waterfall_pos2[i], j[0] + 1, 16, j[1] - j[0] - 2), 0, border_radius=3)
+            if white_key_or_not[i] == 1:
+                if len(waterfalls[i]) > 0:
+                    if waterfalls[i][0][0] <= (global_resolution_y - 200) <= waterfalls[i][0][1]:
+                        if appended[i] == 0:
+                            key_note.append(i)
+                            if midi2 != 'Unable':
+                                midi2.note_on(i + 21, waterfalls[i][0][2])
+                            notes_count[i % 12] += 1
+                            all_note_size += 1
+                            appended[i] = 1
+                    elif waterfalls[i][0][0] > (global_resolution_y - 200):
+                        if appended[i] == 1:
+                            key_note.remove(i)
+                            if midi2 != 'Unable':
+                                midi2.note_off(i + 21)
+                            appended[i] = 0
+                        waterfalls[i].pop(0)
+                for j in waterfalls[i]:
+                    pygame.draw.rect(screen, j[3][0], (waterfall_pos1[i][0], j[0], waterfall_pos1[i][1], j[1] - j[0]),
+                                     2, border_radius=3)
+                    pygame.draw.rect(screen, j[3][1],
+                                     (waterfall_pos2[i][0], j[0] + 1, waterfall_pos2[i][1], j[1] - j[0] - 2), 0,
+                                     border_radius=3)
+        # black key
+        for i in range(88):
+            if white_key_or_not[i] == 0:
+                if len(waterfalls[i]) > 0:
+                    if waterfalls[i][0][0] <= (global_resolution_y - 200) <= waterfalls[i][0][1]:
+                        if appended[i] == 0:
+                            key_note.append(i)
+                            if midi2 != 'Unable':
+                                midi2.note_on(i + 21, waterfalls[i][0][2])
+                            notes_count[i % 12] += 1
+                            all_note_size += 1
+                            appended[i] = 1
+                    elif waterfalls[i][0][0] > (global_resolution_y - 200):
+                        if appended[i] == 1:
+                            key_note.remove(i)
+                            if midi2 != 'Unable':
+                                midi2.note_off(i + 21)
+                            appended[i] = 0
+                        waterfalls[i].pop(0)
+                for j in waterfalls[i]:
+                    pygame.draw.rect(screen, j[3][0], (waterfall_pos1[i][0], j[0], waterfall_pos1[i][1], j[1] - j[0]),
+                                     2, border_radius=3)
+                    pygame.draw.rect(screen, j[3][1],
+                                     (waterfall_pos2[i][0], j[0] + 1, waterfall_pos2[i][1], j[1] - j[0] - 2), 0,
+                                     border_radius=3)
 
     # print bottom color
     pygame.draw.rect(screen, (160, 160, 180), (0, global_resolution_y - 200, global_resolution_x, 200), 0)
@@ -1457,11 +1574,11 @@ while True:
 
     # 顶端矩形
     pygame.draw.rect(screen, top_square_color, (0, 0, global_resolution_x, 85), 0)
-    
+
     # 顶端矩形透明度调整（背景覆盖）
     if transparent_or_not == 1:
         screen.blit(bkg_trans_up, (0, 0))
-    
+
     # 显示文字内容
     screen.blit(sustain_label, (global_resolution_x - 300, 18))
     screen.blit(sustain_state, (global_resolution_x - 47, 23))
