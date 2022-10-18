@@ -38,73 +38,75 @@ https://www.bilibili.com/video/BV1D8411x78X
 
 ### global_settings.ini中的相关设置：
 
-set_root_from_file      仅midi播放模式可用，是否从已保存的midi文件读取根音（避免一些转位和弦的误识别）
+set_root_from_file		仅midi播放模式可用，是否从已保存的midi文件读取根音（避免一些转位和弦的误识别）
 
-background_folder_path  背景图片目录（无需修改文件名）
+background_folder_path	背景图片目录（无需修改文件名）
 
-font_path               字体文件目录（更改字体可能会显示错位，需要在virtual_piano.py中修改相关位置参数）
+font_path			字体文件目录（更改字体可能会显示错位，需要在virtual_piano.py中修改相关位置参数）
 
-midi_file_path          midi播放模式播放的midi文件（暂时只支持一个轨道）
+midi_file_path		midi播放模式播放的midi文件（暂时只支持一个轨道）
 
-root_file_path          当set_root_from_file = 1时，从指定midi文件读取根音
+root_file_path		当set_root_from_file = 1时，从指定midi文件读取根音
 
-[WhiteKeyColor]         白色琴键按下时显示的颜色RGB值
+[WhiteKeyColor]		白色琴键按下时显示的颜色RGB值
 
-[BlackKeyColor]         黑色琴键按下时显示的颜色RGB值
+[BlackKeyColor]		黑色琴键按下时显示的颜色RGB值
 
-waterfall_color_control          瀑布流颜色模式（0、1、2、3对应一种颜色、两种颜色、三种颜色、随机颜色四种模式）
+waterfall_color_control	瀑布流颜色模式（0、1、2、3对应一种颜色、两种颜色、三种颜色、随机颜色四种模式）
 
-WaterFallWidth        瀑布流宽度
+WaterFallWidth		瀑布流宽度
 
-[WaterFallColorMain]        瀑布流轮廓&内容第一种颜色RGB值
+WaterFallOffset		瀑布流偏移量
 
-[WaterFallColor2]       瀑布流轮廓&内容第二种颜色RGB值
+[WaterFallColorMain]	瀑布流轮廓&内容第一种颜色RGB值
 
-[WaterFallColor3]       瀑布流轮廓&内容第三种颜色RGB值
+[WaterFallColor2]		瀑布流轮廓&内容第二种颜色RGB值
 
-[BlackColorDim]         黑键对应瀑布流相对于白键瀑布流颜色的减暗值（轮廓&内容）
+[WaterFallColor3]		瀑布流轮廓&内容第三种颜色RGB值
 
-[ColorBoundary]         瀑布流颜色分界线
+[BlackColorDim]		黑键对应瀑布流相对于白键瀑布流颜色的减暗值（轮廓&内容）
 
-[WhiteKeyOnSustain]     白色琴键松开，踏板踩下时显示的颜色RGB值
+[ColorBoundary]		瀑布流颜色分界线
 
-[BlackKeyOnSustain]     黑色琴键松开，踏板踩下时显示的颜色RGB值
+[WhiteKeyOnSustain]	白色琴键松开，踏板踩下时显示的颜色RGB值
 
-[ChordTextColor]        和弦字体颜色RGB值
+[BlackKeyOnSustain]		黑色琴键松开，踏板踩下时显示的颜色RGB值
 
-[NoteListTextColor]     音符列表字体颜色RGB值
+[ChordTextColor]		和弦字体颜色RGB值
 
-[SustainTextColor]      踏板状态字体颜色RGB值
+[NoteListTextColor]		音符列表字体颜色RGB值
 
-[KeyTextColor]          调号字体颜色RGB值
+[SustainTextColor]		踏板状态字体颜色RGB值
 
-[SpeedTextColor]        速度字体颜色RGB值
+[KeyTextColor]		调号字体颜色RGB值
 
-[TopSquareColor]        顶端矩形颜色RGB值
+[SpeedTextColor]		速度字体颜色RGB值
 
-[TransScreenColor]      背景前透明矩形颜色RGB值
+[TopSquareColor]		顶端矩形颜色RGB值
 
-transparent_or_not       是否默认瀑布流、顶端矩形、键盘透明
+[TransScreenColor]		背景前透明矩形颜色RGB值
 
-trans_screen_opacity    背景前透明矩形透明度
+transparent_or_not		是否默认瀑布流、顶端矩形、键盘透明
 
-top_square_opacity      顶端矩形透明度
+trans_screen_opacity	背景前透明矩形透明度
 
-waterfall_opacity      瀑布流透明度
+top_square_opacity		顶端矩形透明度
 
-piano_key_opacity      键盘透明度
+waterfall_opacity		瀑布流透明度
 
-[GlobalResolution]      全局分辨率（默认1920x1080，更改分辨率为裁剪而非缩放，需要修改offset）
+piano_key_opacity		键盘透明度
 
-[BackGroundOffset]      背景图片位移值
+[GlobalResolution]		全局分辨率（默认1920x1080，更改分辨率为裁剪而非缩放，需要修改offset）
 
-piano_key_offset        钢琴键水平位移值
+[BackGroundOffset]		背景图片位移值
 
-[MusicScoreOffset]      五线谱位移值
+piano_key_offset		钢琴键水平位移值
 
-time_delta              midi播放速度
+[MusicScoreOffset]		五线谱位移值
 
-root_delta              当set_root_from_file = 1时，该值为待播放midi文件与根音midi文件时间差
+time_delta		midi播放速度
+
+root_delta		当set_root_from_file = 1时，该值为待播放midi文件与根音midi文件时间差
 
 ### 存在问题：
 

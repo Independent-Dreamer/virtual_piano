@@ -30,6 +30,8 @@ BKcol = (config.getint('BlackKeyColor', 'BKcol_R'), config.getint('BlackKeyColor
          config.getint('BlackKeyColor', 'BKcol_B'))  # 黑键按下
 white_key_waterfall_width = config.getint('WaterFallWidth', 'white_key_waterfall_width')
 black_key_waterfall_width = config.getint('WaterFallWidth', 'black_key_waterfall_width')
+waterfall_offset_white_key = config.getint('WaterFallOffset', 'waterfall_offset_white_key')
+waterfall_offset_black_key = config.getint('WaterFallOffset', 'waterfall_offset_black_key')
 NTcol_outline = (config.getint('WaterFallColorMain', 'outline_R'), config.getint('WaterFallColorMain', 'outline_G'),
                  config.getint('WaterFallColorMain', 'outline_B'))  # 瀑布流
 NTcol_fill = (config.getint('WaterFallColorMain', 'fill_R'), config.getint('WaterFallColorMain', 'fill_G'),
@@ -440,85 +442,85 @@ for i in range(88):
 for i in range(88):
     if i % 12 == 0:
         # A
-        waterfall_pos1[i][0] = 7 + (37 * (i * 7 / 12)) + piano_key_offset
-        waterfall_pos2[i][0] = 8 + (37 * (i * 7 / 12)) + piano_key_offset
+        waterfall_pos1[i][0] = 7 + (37 * (i * 7 / 12)) + piano_key_offset + waterfall_offset_white_key
+        waterfall_pos2[i][0] = 8 + (37 * (i * 7 / 12)) + piano_key_offset + waterfall_offset_white_key
         waterfall_pos1[i][1] = white_key_waterfall_width
         waterfall_pos2[i][1] = white_key_waterfall_width - 2
 
     if i % 12 == 2:
         # B
-        waterfall_pos1[i][0] = 9 + (37 * (((i - 2) * 7 / 12) + 1)) + piano_key_offset
-        waterfall_pos2[i][0] = 10 + (37 * (((i - 2) * 7 / 12) + 1)) + piano_key_offset
+        waterfall_pos1[i][0] = 9 + (37 * (((i - 2) * 7 / 12) + 1)) + piano_key_offset + waterfall_offset_white_key
+        waterfall_pos2[i][0] = 10 + (37 * (((i - 2) * 7 / 12) + 1)) + piano_key_offset + waterfall_offset_white_key
         waterfall_pos1[i][1] = white_key_waterfall_width
         waterfall_pos2[i][1] = white_key_waterfall_width - 2
 
     if i % 12 == 3:
         # C
-        waterfall_pos1[i][0] = 4 + (37 * (((i - 3) * 7 / 12) + 2)) + piano_key_offset
-        waterfall_pos2[i][0] = 5 + (37 * (((i - 3) * 7 / 12) + 2)) + piano_key_offset
+        waterfall_pos1[i][0] = 4 + (37 * (((i - 3) * 7 / 12) + 2)) + piano_key_offset + waterfall_offset_white_key
+        waterfall_pos2[i][0] = 5 + (37 * (((i - 3) * 7 / 12) + 2)) + piano_key_offset + waterfall_offset_white_key
         waterfall_pos1[i][1] = white_key_waterfall_width
         waterfall_pos2[i][1] = white_key_waterfall_width - 2
 
     if i % 12 == 5:
         # D
-        waterfall_pos1[i][0] = 6 + (37 * (((i - 5) * 7 / 12) + 3)) + piano_key_offset
-        waterfall_pos2[i][0] = 7 + (37 * (((i - 5) * 7 / 12) + 3)) + piano_key_offset
+        waterfall_pos1[i][0] = 6 + (37 * (((i - 5) * 7 / 12) + 3)) + piano_key_offset + waterfall_offset_white_key
+        waterfall_pos2[i][0] = 7 + (37 * (((i - 5) * 7 / 12) + 3)) + piano_key_offset + waterfall_offset_white_key
         waterfall_pos1[i][1] = white_key_waterfall_width
         waterfall_pos2[i][1] = white_key_waterfall_width - 2
 
     if i % 12 == 7:
         # E
-        waterfall_pos1[i][0] = 8 + (37 * (((i - 7) * 7 / 12) + 4)) + piano_key_offset
-        waterfall_pos2[i][0] = 9 + (37 * (((i - 7) * 7 / 12) + 4)) + piano_key_offset
+        waterfall_pos1[i][0] = 8 + (37 * (((i - 7) * 7 / 12) + 4)) + piano_key_offset + waterfall_offset_white_key
+        waterfall_pos2[i][0] = 9 + (37 * (((i - 7) * 7 / 12) + 4)) + piano_key_offset + waterfall_offset_white_key
         waterfall_pos1[i][1] = white_key_waterfall_width
         waterfall_pos2[i][1] = white_key_waterfall_width - 2
 
     if i % 12 == 8:
         # F
-        waterfall_pos1[i][0] = 3 + (37 * (((i - 8) * 7 / 12) + 5)) + piano_key_offset
-        waterfall_pos2[i][0] = 4 + (37 * (((i - 8) * 7 / 12) + 5)) + piano_key_offset
+        waterfall_pos1[i][0] = 3 + (37 * (((i - 8) * 7 / 12) + 5)) + piano_key_offset + waterfall_offset_white_key
+        waterfall_pos2[i][0] = 4 + (37 * (((i - 8) * 7 / 12) + 5)) + piano_key_offset + waterfall_offset_white_key
         waterfall_pos1[i][1] = white_key_waterfall_width
         waterfall_pos2[i][1] = white_key_waterfall_width - 2
 
     if i % 12 == 10:
         # G
-        waterfall_pos1[i][0] = 5 + (37 * (((i - 10) * 7 / 12) + 6)) + piano_key_offset
-        waterfall_pos2[i][0] = 6 + (37 * (((i - 10) * 7 / 12) + 6)) + piano_key_offset
+        waterfall_pos1[i][0] = 5 + (37 * (((i - 10) * 7 / 12) + 6)) + piano_key_offset + waterfall_offset_white_key
+        waterfall_pos2[i][0] = 6 + (37 * (((i - 10) * 7 / 12) + 6)) + piano_key_offset + waterfall_offset_white_key
         waterfall_pos1[i][1] = white_key_waterfall_width
         waterfall_pos2[i][1] = white_key_waterfall_width - 2
 
     if i % 12 == 1:
         # Bb
-        waterfall_pos1[i][0] = 9 + (37 * ((i - 1) * 7 / 12)) + 18 + piano_key_offset
-        waterfall_pos2[i][0] = 10 + (37 * ((i - 1) * 7 / 12)) + 18 + piano_key_offset
+        waterfall_pos1[i][0] = 9 + (37 * ((i - 1) * 7 / 12)) + 18 + piano_key_offset + waterfall_offset_black_key
+        waterfall_pos2[i][0] = 10 + (37 * ((i - 1) * 7 / 12)) + 18 + piano_key_offset + waterfall_offset_black_key
         waterfall_pos1[i][1] = black_key_waterfall_width
         waterfall_pos2[i][1] = black_key_waterfall_width - 2
 
     if i % 12 == 4:
         # Db
-        waterfall_pos1[i][0] = 10 + (37 * (((i - 4) * 7 / 12) + 2)) + 14 + piano_key_offset
-        waterfall_pos2[i][0] = 11 + (37 * (((i - 4) * 7 / 12) + 2)) + 14 + piano_key_offset
+        waterfall_pos1[i][0] = 10 + (37 * (((i - 4) * 7 / 12) + 2)) + 14 + piano_key_offset + waterfall_offset_black_key
+        waterfall_pos2[i][0] = 11 + (37 * (((i - 4) * 7 / 12) + 2)) + 14 + piano_key_offset + waterfall_offset_black_key
         waterfall_pos1[i][1] = black_key_waterfall_width
         waterfall_pos2[i][1] = black_key_waterfall_width - 2
 
     if i % 12 == 6:
         # Eb
-        waterfall_pos1[i][0] = 8 + (37 * (((i - 6) * 7 / 12) + 3)) + 18 + piano_key_offset
-        waterfall_pos2[i][0] = 9 + (37 * (((i - 6) * 7 / 12) + 3)) + 18 + piano_key_offset
+        waterfall_pos1[i][0] = 8 + (37 * (((i - 6) * 7 / 12) + 3)) + 18 + piano_key_offset + waterfall_offset_black_key
+        waterfall_pos2[i][0] = 9 + (37 * (((i - 6) * 7 / 12) + 3)) + 18 + piano_key_offset + waterfall_offset_black_key
         waterfall_pos1[i][1] = black_key_waterfall_width
         waterfall_pos2[i][1] = black_key_waterfall_width - 2
 
     if i % 12 == 9:
         # Gb
-        waterfall_pos1[i][0] = 9 + (37 * (((i - 9) * 7 / 12) + 5)) + 14 + piano_key_offset
-        waterfall_pos2[i][0] = 10 + (37 * (((i - 9) * 7 / 12) + 5)) + 14 + piano_key_offset
+        waterfall_pos1[i][0] = 9 + (37 * (((i - 9) * 7 / 12) + 5)) + 14 + piano_key_offset + waterfall_offset_black_key
+        waterfall_pos2[i][0] = 10 + (37 * (((i - 9) * 7 / 12) + 5)) + 14 + piano_key_offset + waterfall_offset_black_key
         waterfall_pos1[i][1] = black_key_waterfall_width
         waterfall_pos2[i][1] = black_key_waterfall_width - 2
 
     if i % 12 == 11:
         # Ab
-        waterfall_pos1[i][0] = 9 + (37 * (((i - 11) * 7 / 12) + 6)) + 16 + piano_key_offset
-        waterfall_pos2[i][0] = 10 + (37 * (((i - 11) * 7 / 12) + 6)) + 16 + piano_key_offset
+        waterfall_pos1[i][0] = 9 + (37 * (((i - 11) * 7 / 12) + 6)) + 16 + piano_key_offset + waterfall_offset_black_key
+        waterfall_pos2[i][0] = 10 + (37 * (((i - 11) * 7 / 12) + 6)) + 16 + piano_key_offset + waterfall_offset_black_key
         waterfall_pos1[i][1] = black_key_waterfall_width
         waterfall_pos2[i][1] = black_key_waterfall_width - 2
 
