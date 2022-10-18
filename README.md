@@ -18,7 +18,7 @@ https://www.bilibili.com/video/BV1D8411x78X
 
 3.按T选择瀑布流、键盘、顶端矩形透明或不透明
 
-4.按R开启或关闭瀑布流颜色随机模式
+4.按R调整瀑布流颜色模式（共有一种颜色、两种颜色、三种颜色、随机颜色四种模式）
 
 3.按D取消调性自动识别（离调和弦密集、特殊调式识别不准确时用）
 
@@ -52,11 +52,19 @@ root_file_path          当set_root_from_file = 1时，从指定midi文件读取
 
 [BlackKeyColor]         黑色琴键按下时显示的颜色RGB值
 
-random_waterfall_color       是否开启瀑布流颜色随机模式
+waterfall_color_control          瀑布流颜色模式（0、1、2、3对应一种颜色、两种颜色、三种颜色、随机颜色四种模式）
 
-[WaterFallColor]        瀑布流外轮廓颜色RGB值
+WaterFallWidth        瀑布流宽度
 
-[WaterFallColor2]       瀑布流颜色RGB值
+[WaterFallColorMain]        瀑布流轮廓&内容第一种颜色RGB值
+
+[WaterFallColor2]       瀑布流轮廓&内容第二种颜色RGB值
+
+[WaterFallColor3]       瀑布流轮廓&内容第三种颜色RGB值
+
+[BlackColorDim]         黑键对应瀑布流相对于白键瀑布流颜色的减暗值（轮廓&内容）
+
+[ColorBoundary]         瀑布流颜色分界线
 
 [WhiteKeyOnSustain]     白色琴键松开，踏板踩下时显示的颜色RGB值
 
@@ -86,7 +94,7 @@ waterfall_opacity      瀑布流透明度
 
 piano_key_opacity      键盘透明度
 
-[GlobalResolution]      全局分辨率（默认1920x1200，更改分辨率为裁剪而非缩放，需要修改offset）
+[GlobalResolution]      全局分辨率（默认1920x1080，更改分辨率为裁剪而非缩放，需要修改offset）
 
 [BackGroundOffset]      背景图片位移值
 
