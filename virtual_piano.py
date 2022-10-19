@@ -386,31 +386,31 @@ for i in range(88):
 for i in range(88):
     if i % 12 == 0:
         # A
-        white_key_pos[i] = (37 * (i * 7 / 12)) - 1 + piano_key_offset
+        white_key_pos[i] = (37 * (i * 7 / 12)) + piano_key_offset
 
     if i % 12 == 2:
         # B
-        white_key_pos[i] = (37 * (((i - 2) * 7 / 12) + 1)) - 1 + piano_key_offset
+        white_key_pos[i] = (37 * (((i - 2) * 7 / 12) + 1)) + piano_key_offset
 
     if i % 12 == 3:
         # C
-        white_key_pos[i] = (37 * (((i - 3) * 7 / 12) + 2)) - 1 + piano_key_offset
+        white_key_pos[i] = (37 * (((i - 3) * 7 / 12) + 2)) + piano_key_offset
 
     if i % 12 == 5:
         # D
-        white_key_pos[i] = (37 * (((i - 5) * 7 / 12) + 3)) - 1 + piano_key_offset
+        white_key_pos[i] = (37 * (((i - 5) * 7 / 12) + 3)) + piano_key_offset
 
     if i % 12 == 7:
         # E
-        white_key_pos[i] = (37 * (((i - 7) * 7 / 12) + 4)) - 1 + piano_key_offset
+        white_key_pos[i] = (37 * (((i - 7) * 7 / 12) + 4)) + piano_key_offset
 
     if i % 12 == 8:
         # F
-        white_key_pos[i] = (37 * (((i - 8) * 7 / 12) + 5)) - 1 + piano_key_offset
+        white_key_pos[i] = (37 * (((i - 8) * 7 / 12) + 5)) + piano_key_offset
 
     if i % 12 == 10:
         # G
-        white_key_pos[i] = (37 * (((i - 10) * 7 / 12) + 6)) - 1 + piano_key_offset
+        white_key_pos[i] = (37 * (((i - 10) * 7 / 12) + 6)) + piano_key_offset
 
 for i in range(88):
     if i % 12 == 1:
@@ -1143,18 +1143,18 @@ while True:
                                      border_radius=3)
 
     # print bottom color
-    pygame.draw.rect(screen, (160, 160, 180), (0, global_resolution_y - 200, global_resolution_x, 200), 0)
+    pygame.draw.rect(screen, (185, 185, 210), (0, global_resolution_y - 200, global_resolution_x, 200), 0)
 
     # print piano keys
     for i in range(52):
-        pygame.draw.rect(screen, 'white', (white_key_pos[white_key_reflect[i]], global_resolution_y - 200, 34, 198), 0)
+        pygame.draw.rect(screen, 'white', (white_key_pos[white_key_reflect[i]], global_resolution_y - 200, 33, 198), 0)
     for i in key_note:
         if white_key_or_not[i] == 1:
-            pygame.draw.rect(screen, WKcol, (white_key_pos[i] + 0, global_resolution_y - 200, 34, 198), 0)
+            pygame.draw.rect(screen, WKcol, (white_key_pos[i] + 0, global_resolution_y - 200, 33, 198), 0)
     for h in on_sustain:
         i = h - 21
         if white_key_or_not[i] == 1:
-            pygame.draw.rect(screen, WKcol_on_sus, (white_key_pos[i] + 0, global_resolution_y - 200, 34, 198), 0)
+            pygame.draw.rect(screen, WKcol_on_sus, (white_key_pos[i] + 0, global_resolution_y - 200, 33, 198), 0)
     for i in range(36):
         pygame.draw.rect(screen, 'black', (black_key_pos1[black_key_reflect[i]], global_resolution_y - 200, 20, 130), 0)
         pygame.draw.rect(screen, (75, 75, 75),
