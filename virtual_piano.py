@@ -1143,7 +1143,7 @@ while True:
                                      border_radius=3)
 
     # print bottom color
-    pygame.draw.rect(screen, (185, 185, 210), (0, global_resolution_y - 200, global_resolution_x, 200), 0)
+    pygame.draw.rect(screen, (195, 195, 220), (0, global_resolution_y - 200, global_resolution_x, 200), 0)
 
     # print piano keys
     for i in range(52):
