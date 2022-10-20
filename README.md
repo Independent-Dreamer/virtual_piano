@@ -108,6 +108,12 @@ time_delta		midi播放速度
 
 root_delta		当set_root_from_file = 1时，该值为待播放midi文件与根音midi文件时间差
 
+flash_neon_prepare		是否提前载入动态霓虹灯效果
+
+flash_neon_pic_path		动态霓虹灯效果图片路径（逐帧）
+
+flash_neon_gap_time	霓虹灯每一帧间隔
+
 ### 存在问题：
 
 1.部分和弦识别不准确，斜杠和弦/非三度叠置和弦/过于复杂的和弦难以识别

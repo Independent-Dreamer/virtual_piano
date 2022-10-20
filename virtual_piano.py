@@ -92,6 +92,9 @@ background_offset_y = config.getint('BackGroundOffset', 'bkg_offset_y')
 piano_key_offset = config.getint('PianoKeyOffset', 'piano_key_offset')
 music_score_offset_x = config.getint('MusicScoreOffset', 'music_score_offset_x')
 music_score_offset_y = config.getint('MusicScoreOffset', 'music_score_offset_y')
+flash_neon_prepare = config.getint('FlashNeonLight', 'flash_neon_prepare')
+flash_neon_pic_path = config.get('FlashNeonLight', 'flash_neon_pic_path')
+flash_neon_gap_time = config.getfloat('FlashNeonLight', 'flash_neon_gap_time')
 
 # 是否从midi文件读取根音
 if set_root_from_file == 1:
@@ -283,6 +286,13 @@ bkg_set = 0
 bkg_num = len(all_bkg_name)
 bkg = pygame.image.load(background_folder_path + '/' + all_bkg_name[bkg_set]).convert()
 screen.blit(bkg, (background_offset_x, background_offset_y))
+
+# Neon Light
+neon_flash = flash_neon_prepare
+all_neon_name = os.listdir('neon/')
+neon_light = 0
+neon_num = len(all_neon_name)
+neon = pygame.image.load('neon/' + all_neon_name[neon_light]).convert_alpha()
 
 # 透明效果
 bkg_trans_up = pygame.Surface((global_resolution_x, 85))
@@ -898,6 +908,23 @@ def get_wf_color(key_pos):
                         to_return[1][1] - black_color_dim_fill, to_return[1][2] - black_color_dim_fill]
     return [tuple(to_return[0]), tuple(to_return[1])]
 
+neon_flashing = neon
+def flash_neon():
+    global neon_flashing
+    neon_flash_dir = os.listdir(flash_neon_pic_path + '/')
+    neon_flash_num = len(neon_flash_dir)
+    neon_flash_list = []
+    neon_flash_dir.sort()
+    for i in range(len(neon_flash_dir)):
+        neon_flash_list.append(pygame.image.load(flash_neon_pic_path + '/neon (' + str(i + 1) + ').png').convert_alpha())
+    while True:
+        if if_exit == 1:
+            break
+        for i in range(len(neon_flash_dir)):
+            if if_exit == 1:
+                break
+            neon_flashing = neon_flash_list[i]
+            time.sleep(flash_neon_gap_time)
 
 # 若为MIDI播放模式，则读取音符
 if mode_id >= 3:
@@ -912,6 +939,11 @@ t5.start()
 # print major key (all mode)
 t6 = Thread(target=print_major_key)
 t6.start()
+
+# flashing neon
+if flash_neon_prepare == 1:
+    t7 = Thread(target=flash_neon)
+    t7.start()
 
 # if input mode then get midi signals
 if mode_id <= 2:
@@ -1173,6 +1205,13 @@ while True:
     if transparent_or_not == 1:
         screen.blit(bkg_trans_middle, (0, 85))
         screen.blit(bkg_trans_down, (0, global_resolution_y - 200))
+
+    # print neon light
+    if neon_flash == 1:
+        screen.blit(neon_flashing, (((global_resolution_x - 1920) / 2), global_resolution_y - 303))
+    else:
+        if neon_light < neon_num:
+            screen.blit(neon, (((global_resolution_x - 1920) / 2), global_resolution_y - 303))
 
     # print chord (with music score)
     if mode_id == 1 or mode_id == 2 or mode_id == 5 or mode_id == 6 or mode_id == 7:
@@ -1693,6 +1732,17 @@ while True:
                 bkg_trans_up.blit(bkg, (background_offset_x, background_offset_y))
                 bkg_trans_middle.blit(bkg, (background_offset_x, background_offset_y - 85))
                 bkg_trans_down.blit(bkg, (background_offset_x, background_offset_y - (global_resolution_y - 200)))
+            elif event.key == pygame.K_l:
+                neon_light += 1
+                if neon_light >= neon_num + 1:
+                    neon_light -= (neon_num + 1)
+                if neon_light < neon_num:
+                    neon = pygame.image.load('neon/' + all_neon_name[neon_light]).convert_alpha()
+            elif event.key == pygame.K_f:
+                if flash_neon_prepare == 1:
+                    neon_flash = 1 - neon_flash
+                else:
+                    neon_flash = 0
             elif event.key == pygame.K_q:
                 if_exit = 1
                 # 卸载所有模块
