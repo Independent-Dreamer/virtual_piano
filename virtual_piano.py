@@ -1743,6 +1743,42 @@ while True:
                     neon_flash = 1 - neon_flash
                 else:
                     neon_flash = 0
+            elif event.key == pygame.K_1:
+                major_key = 'C'
+                major_key_print = font1.render(str('Majorkey: ' + major_key), True, major_key_text_color)
+            elif event.key == pygame.K_2:
+                major_key = 'Db'
+                major_key_print = font1.render(str('Majorkey: ' + major_key), True, major_key_text_color)
+            elif event.key == pygame.K_3:
+                major_key = 'D'
+                major_key_print = font1.render(str('Majorkey: ' + major_key), True, major_key_text_color)
+            elif event.key == pygame.K_4:
+                major_key = 'Eb'
+                major_key_print = font1.render(str('Majorkey: ' + major_key), True, major_key_text_color)
+            elif event.key == pygame.K_5:
+                major_key = 'E'
+                major_key_print = font1.render(str('Majorkey: ' + major_key), True, major_key_text_color)
+            elif event.key == pygame.K_6:
+                major_key = 'F'
+                major_key_print = font1.render(str('Majorkey: ' + major_key), True, major_key_text_color)
+            elif event.key == pygame.K_7:
+                major_key = 'Gb'
+                major_key_print = font1.render(str('Majorkey: ' + major_key), True, major_key_text_color)
+            elif event.key == pygame.K_8:
+                major_key = 'G'
+                major_key_print = font1.render(str('Majorkey: ' + major_key), True, major_key_text_color)
+            elif event.key == pygame.K_9:
+                major_key = 'Ab'
+                major_key_print = font1.render(str('Majorkey: ' + major_key), True, major_key_text_color)
+            elif event.key == pygame.K_0:
+                major_key = 'A'
+                major_key_print = font1.render(str('Majorkey: ' + major_key), True, major_key_text_color)
+            elif event.key == pygame.K_LEFT:
+                major_key = 'Bb'
+                major_key_print = font1.render(str('Majorkey: ' + major_key), True, major_key_text_color)
+            elif event.key == pygame.K_RIGHT:
+                major_key = 'B'
+                major_key_print = font1.render(str('Majorkey: ' + major_key), True, major_key_text_color)
             elif event.key == pygame.K_q:
                 if_exit = 1
                 # 卸载所有模块
