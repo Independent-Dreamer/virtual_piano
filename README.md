@@ -30,7 +30,11 @@ https://www.bilibili.com/video/BV1D8411x78X
 
 7.按P更改和弦显示位置或取消显示（仅瀑布流模式）
 
-8.按Q退出
+8.按E清除当前所有瀑布流
+
+9.按H开启/关闭键盘白色灯光
+
+9.按Q退出
 
 ### 运行方式：
 
@@ -47,6 +51,18 @@ font_path			字体文件目录（更改字体可能会显示错位，需要在vi
 midi_file_path		midi播放模式播放的midi文件（暂时只支持一个轨道）
 
 root_file_path		当set_root_from_file = 1时，从指定midi文件读取根音
+
+light_file_path		白色灯光png文件路径
+
+key_light_open		默认开启键盘白色灯光
+
+light_on_sustain		松开踏板，按下的键是否仍然亮灯
+
+light_offset_white_x		白键灯光水平偏移量
+
+light_offset_black_x		黑键灯光水平偏移量
+
+light_offset_y		灯光垂直偏移量
 
 [WhiteKeyColor]		白色琴键按下时显示的颜色RGB值
 

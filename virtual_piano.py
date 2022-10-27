@@ -23,7 +23,13 @@ config.read(path, encoding="UTF-8")
 background_folder_path = config.get('ReadFiles', 'background_folder_path')
 font_path = config.get('ReadFiles', 'font_path')
 midi_file_path = config.get('ReadFiles', 'midi_file_path')
+light_file_path = config.get('ReadFiles', 'light_file_path')
 set_root_from_file = config.getint('SetRootFromFile', 'set_root_from_file')
+key_light_open = config.getint('KeyLight', 'key_light_open')
+light_on_sustain = config.getint('KeyLight', 'light_on_sustain')
+light_offset_white_x = config.getint('KeyLight', 'light_offset_white_x')
+light_offset_black_x = config.getint('KeyLight', 'light_offset_black_x')
+light_offset_y = config.getint('KeyLight', 'light_offset_y')
 WKcol = (config.getint('WhiteKeyColor', 'WKcol_R'), config.getint('WhiteKeyColor', 'WKcol_G'),
          config.getint('WhiteKeyColor', 'WKcol_B'))  # 白键按下
 BKcol = (config.getint('BlackKeyColor', 'BKcol_R'), config.getint('BlackKeyColor', 'BKcol_G'),
@@ -293,6 +299,9 @@ all_neon_name = os.listdir('neon/')
 neon_light = 0
 neon_num = len(all_neon_name)
 neon = pygame.image.load('neon/' + all_neon_name[neon_light]).convert_alpha()
+
+# key light
+key_light = pygame.image.load(light_file_path).convert_alpha()
 
 # 透明效果
 bkg_trans_up = pygame.Surface((global_resolution_x, 85))
@@ -1620,6 +1629,24 @@ while True:
     if transparent_or_not == 1:
         screen.blit(bkg_trans_up, (0, 0))
 
+    # print key light
+    if key_light_open == 1:
+        for i in key_note:
+            if white_key_or_not[i] == 1:
+                screen.blit(key_light, (white_key_pos[i] + light_offset_white_x, global_resolution_y + light_offset_y))
+        for i in key_note:
+            if white_key_or_not[i] == 0:
+                screen.blit(key_light, (black_key_pos1[i] + light_offset_black_x, global_resolution_y + light_offset_y))
+        if light_on_sustain == 1:
+            for s in on_sustain:
+                i = s - 21
+                if white_key_or_not[i] == 1:
+                    screen.blit(key_light, (white_key_pos[i] + light_offset_white_x, global_resolution_y + light_offset_y))
+            for s in on_sustain:
+                i = s - 21
+                if white_key_or_not[i] == 0:
+                    screen.blit(key_light, (black_key_pos1[i] + light_offset_black_x, global_resolution_y + light_offset_y))
+
     # 显示文字内容
     screen.blit(sustain_label, (global_resolution_x - 300, 18))
     screen.blit(sustain_state, (global_resolution_x - 47, 23))
@@ -1732,6 +1759,8 @@ while True:
                 bkg_trans_up.blit(bkg, (background_offset_x, background_offset_y))
                 bkg_trans_middle.blit(bkg, (background_offset_x, background_offset_y - 85))
                 bkg_trans_down.blit(bkg, (background_offset_x, background_offset_y - (global_resolution_y - 200)))
+            elif event.key == pygame.K_h:
+                key_light_open = 1 - key_light_open
             elif event.key == pygame.K_l:
                 neon_light += 1
                 if neon_light >= neon_num + 1:
@@ -1779,6 +1808,9 @@ while True:
             elif event.key == pygame.K_RIGHT:
                 major_key = 'B'
                 major_key_print = font1.render(str('Majorkey: ' + major_key), True, major_key_text_color)
+            elif event.key == pygame.K_e:
+                for i in range(0, 88):
+                    waterfalls[i].clear()
             elif event.key == pygame.K_q:
                 if_exit = 1
                 # 卸载所有模块
