@@ -616,7 +616,7 @@ def get_chord(key_note, on_sustain, major_key, root_decide):
     else:
         root_virtual = (root_decide - 3) % 12  # 预先决定根音，而非后期判断权重
         if root_virtual not in inp_unsorted:
-            inp_unsorted[root_virtual + 96] = -1  # 把根音加进来，以判断和弦，+96是为了防止其取代低音位置
+            inp_unsorted[root_virtual + 108] = -1  # 把根音加进来，以判断和弦，+96是为了防止其取代低音位置
 
     # 将所有音排序，元素为note编号（以C开始）
     inp_dict = dict(sorted(inp_unsorted.items(), key=lambda x: x[0]))
