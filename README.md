@@ -38,7 +38,7 @@ https://www.bilibili.com/video/BV1D8411x78X
 
 ### 运行方式：
 
-安装pygame, mido等相关库，执行virtual_piano.py；virtual_piano_exe中包含pyinstaller生成的可执行文件，可直接运行
+安装pygame, mido等相关库，执行virtual_piano.py或virtual_piano_mt.py（针对多线程实现midi输入做了一些改进）
 
 ### global_settings.ini中的相关设置：
 

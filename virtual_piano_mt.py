@@ -14,6 +14,7 @@ from tkinter import ttk
 import configparser
 import ctypes
 import random
+from queue import Queue
 
 config = configparser.ConfigParser()
 path = 'global_settings.ini'
@@ -743,61 +744,43 @@ def get_u_second():
 
 
 # 从输入设备读取midi信息
+cur_midi_signal = Queue()
 def input_midi():
-    global sustain
-    global on_sustain
-    global midi2
-    global midi1
-    global notes_count
-    global all_note_size
-    global key_note
-    global waterfalls
-    global sustain_state
-    while True:
-        if midi1 == 'Unable':
-            break
-        if if_exit == 1:
-            break
-        c_all = midi1.read(10)
-        if len(c_all) > 0:
-            for c in c_all:
-                if c[0][0] == 144:
-                    if sustain == 1:
-                        if c[0][1] in on_sustain:
-                            on_sustain.remove(c[0][1])
-                            if midi2 != 'Unable':
-                                midi2.note_off(c[0][1])
-                    if midi2 != 'Unable':
+    global cur_midi_signal
+    global if_exit
+    if midi1 != 'Unable':
+        while True:
+            time.sleep(0.001)
+            if if_exit == 1:
+                break
+            c_all = midi1.read(10)
+            if len(c_all) > 0:
+                for c in c_all:
+                    cur_midi_signal.put(c)
+                    # Key Press
+                    if c[0][0] == 144 and midi2 != 'Unable':
                         midi2.note_on(c[0][1], c[0][2])
-                    notes_count[(c[0][1] - 21) % 12] += 1
-                    all_note_size += 1
-                    key_note.append(c[0][1] - 21)
-                    if mode_id == 0 or mode_id == 2:
-                        waterfalls[c[0][1] - 21].append([0, 0, 0, get_wf_color(c[0][1] - 21)])
-                elif c[0][0] == 128:
-                    if sustain == 0:
-                        if midi2 != 'Unable':
-                            midi2.note_off(c[0][1])
-                    elif sustain == 1:
-                        on_sustain.append(c[0][1])
-                    if len(key_note) > 0:
-                        key_note.remove(c[0][1] - 21)
-                        if (mode_id == 0 or mode_id == 2) and len(waterfalls[c[0][1] - 21]) - 1 >= 0:
-                            waterfalls[c[0][1] - 21][len(waterfalls[c[0][1] - 21]) - 1][0] = 1
-                elif c[0][0] == 176:
-                    if c[0][1] == 64:
-                        if c[0][2] == 127:
-                            sustain = 1
-                            sustain_state = font2.render('√', True, sustain_text_color)
-                        elif c[0][2] == 0:
-                            sustain = 0
-                            sustain_state = font2.render('×', True, sustain_text_color)
-                            for y in on_sustain:
-                                if (y - 21) not in key_note:
-                                    if midi2 != 'Unable':
-                                        midi2.note_off(y)
-                            on_sustain = []
-        time.sleep(0.001)
+                    # Key Release
+                    elif c[0][0] == 128 and midi2 != 'Unable':
+                        midi2.note_off(c[0][1])
+                    # Sustain
+                    elif c[0][0] == 176 and midi2 != 'Unable':
+                        if c[0][1] == 64:
+                            if c[0][2] == 127:
+                                midi2.write_short(0xb0, 64, 127);
+                            elif c[0][2] == 0:
+                                midi2.write_short(0xb0, 64, 0);
+
+
+# 主循环读取midi信息
+def read_midi():
+    global cur_midi_signal
+    all_midi_data = []
+    for i in range(20):
+        if(cur_midi_signal.empty()):
+            break
+        all_midi_data.append(cur_midi_signal.get())
+    return all_midi_data
 
 
 # 获取和弦
@@ -988,10 +971,40 @@ else:
 
 # pygame主循环
 while True:
-
     # refresh time
     global_time = get_u_second() - base_time
     global_time_delta = int(global_time * time_delta / 10000)
+
+    # receive midi signals
+    if mode_id <= 2:
+        c_all = read_midi()
+        if len(c_all) > 0:
+            for c in c_all:
+                if c[0][0] == 144:
+                    if sustain == 1:
+                        if c[0][1] in on_sustain:
+                            on_sustain.remove(c[0][1])
+                    notes_count[(c[0][1] - 21) % 12] += 1
+                    all_note_size += 1
+                    key_note.append(c[0][1] - 21)
+                    if mode_id == 0 or mode_id == 2:
+                        waterfalls[c[0][1] - 21].append([0, 0, 0, get_wf_color(c[0][1] - 21)])
+                elif c[0][0] == 128:
+                    if sustain == 1:
+                        on_sustain.append(c[0][1])
+                    if len(key_note) > 0:
+                        key_note.remove(c[0][1] - 21)
+                        if (mode_id == 0 or mode_id == 2) and len(waterfalls[c[0][1] - 21]) - 1 >= 0:
+                            waterfalls[c[0][1] - 21][len(waterfalls[c[0][1] - 21]) - 1][0] = 1
+                elif c[0][0] == 176:
+                    if c[0][1] == 64:
+                        if c[0][2] == 127:
+                            sustain = 1
+                            sustain_state = font2.render('√', True, sustain_text_color)
+                        elif c[0][2] == 0:
+                            sustain = 0
+                            sustain_state = font2.render('×', True, sustain_text_color)
+                            on_sustain = []
 
     # set note (score only or waterfall up)
     if finished == 0 and (mode_id == 3 or mode_id == 5 or mode_id == 6):
