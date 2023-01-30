@@ -1189,14 +1189,14 @@ while True:
 
     # print piano keys
     for i in range(52):
-        pygame.draw.rect(screen, 'white', (white_key_pos[white_key_reflect[i]], global_resolution_y - 200, 33, 198), 0)
+        pygame.draw.rect(screen, 'white', (white_key_pos[white_key_reflect[i]], global_resolution_y - 200, 33, 200), 0)
     for i in key_note:
         if white_key_or_not[i] == 1:
-            pygame.draw.rect(screen, WKcol, (white_key_pos[i] + 0, global_resolution_y - 200, 33, 198), 0)
+            pygame.draw.rect(screen, WKcol, (white_key_pos[i] + 0, global_resolution_y - 200, 33, 200), 0)
     for h in on_sustain:
         i = h - 21
         if white_key_or_not[i] == 1:
-            pygame.draw.rect(screen, WKcol_on_sus, (white_key_pos[i] + 0, global_resolution_y - 200, 33, 198), 0)
+            pygame.draw.rect(screen, WKcol_on_sus, (white_key_pos[i] + 0, global_resolution_y - 200, 33, 200), 0)
     for i in range(36):
         pygame.draw.rect(screen, 'black', (black_key_pos1[black_key_reflect[i]], global_resolution_y - 200, 20, 130), 0)
         pygame.draw.rect(screen, (75, 75, 75),
@@ -1218,10 +1218,10 @@ while True:
 
     # print neon light
     if neon_flash == 1:
-        screen.blit(neon_flashing, (((global_resolution_x - 1920) / 2), global_resolution_y - 303))
+        screen.blit(neon_flashing, (((global_resolution_x - 1920) / 2), global_resolution_y - 302))
     else:
         if neon_light < neon_num:
-            screen.blit(neon, (((global_resolution_x - 1920) / 2), global_resolution_y - 303))
+            screen.blit(neon, (((global_resolution_x - 1920) / 2), global_resolution_y - 302))
 
     # print chord (with music score)
     if mode_id == 1 or mode_id == 2 or mode_id == 5 or mode_id == 6 or mode_id == 7:
@@ -1649,11 +1649,11 @@ while True:
                     screen.blit(key_light, (black_key_pos1[i] + light_offset_black_x, global_resolution_y + light_offset_y))
 
     # 显示文字内容
-    screen.blit(sustain_label, (global_resolution_x - 300, 18))
-    screen.blit(sustain_state, (global_resolution_x - 47, 23))
-    screen.blit(major_key_print, (36, 18))
+    screen.blit(sustain_label, (global_resolution_x - 309, 18))
+    screen.blit(sustain_state, (global_resolution_x - 55, 23))
+    screen.blit(major_key_print, (40, 18))
     screen.blit(speed_print, ((global_resolution_x / 2) - 120, 18))
-    screen.blit(tonicization_print, (260 + font_distance[major_key], 25))
+    screen.blit(tonicization_print, (264 + font_distance[major_key], 25))
 
     # 循环获取事件，监听事件状态
     for event in pygame.event.get():
