@@ -1,8 +1,8 @@
 # Virtual_Piano
 
-### 20230428
+### 更新内容 After 2023-04-28：
 
-增加了一些新的字体适配，global_settings_(1,2,3).ini和virtual_piano_settings_(1,2,3).py对应三种不同字体和设置
+增加了一些新的字体适配，global_settings_(1,2,3).ini 和 virtual_piano_settings_(1,2,3).py 对应三种不同字体和设置
 
 ### 演示视频：
 
