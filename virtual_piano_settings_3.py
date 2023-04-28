@@ -1225,7 +1225,7 @@ while True:
 
     # print chord (with music score)
     if mode_id == 1 or mode_id == 2 or mode_id == 5 or mode_id == 6 or mode_id == 7:
-        screen.blit(chord_text, (1080 + music_score_offset_x, 366 + music_score_offset_y))
+        screen.blit(chord_text, (1080 + music_score_offset_x, 375 + music_score_offset_y))
 
     # print chord (waterfall single mode)
     if mode_id == 0 or mode_id == 3 or mode_id == 4:
@@ -1260,8 +1260,8 @@ while True:
         note_list_text_bt = note_list_font.render('Bass: ' + bass_note + '  Treble: ' + treble_note,
                                                   True, note_list_text_color)
         note_list_text = note_list_font.render(str(note_to_print), True, note_list_text_color)
-        screen.blit(note_list_text_bt, (1080 + music_score_offset_x, 496 + music_score_offset_y))
-        screen.blit(note_list_text, (1080 + music_score_offset_x, 566 + music_score_offset_y))
+        screen.blit(note_list_text_bt, (1080 + music_score_offset_x, 505 + music_score_offset_y))
+        screen.blit(note_list_text, (1080 + music_score_offset_x, 575 + music_score_offset_y))
 
     # print musicsheets and notes (music score)
     if mode_id == 1 or mode_id == 2 or mode_id == 5 or mode_id == 6 or mode_id == 7:
@@ -1649,11 +1649,11 @@ while True:
                     screen.blit(key_light, (black_key_pos1[i] + light_offset_black_x, global_resolution_y + light_offset_y))
 
     # 显示文字内容
-    screen.blit(sustain_label, (global_resolution_x - 296, 16))
-    screen.blit(sustain_state, (global_resolution_x - 52, 15))
-    screen.blit(major_key_print, (42, 16))
-    screen.blit(speed_print, ((global_resolution_x / 2) - 120, 16))
-    screen.blit(tonicization_print, (236 + font_distance[major_key], 22))
+    screen.blit(sustain_label, (global_resolution_x - 296, 15))
+    screen.blit(sustain_state, (global_resolution_x - 52, 14))
+    screen.blit(major_key_print, (42, 15))
+    screen.blit(speed_print, ((global_resolution_x / 2) - 120, 15))
+    screen.blit(tonicization_print, (236 + font_distance[major_key], 21))
 
     # 循环获取事件，监听事件状态
     for event in pygame.event.get():
