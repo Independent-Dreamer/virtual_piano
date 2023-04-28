@@ -16,7 +16,7 @@ import ctypes
 import random
 
 config = configparser.ConfigParser()
-path = 'global_settings.ini'
+path = 'global_settings_1.ini'
 config.read(path, encoding="UTF-8")
 
 # 全局设置

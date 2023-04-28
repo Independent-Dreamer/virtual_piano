@@ -14,10 +14,9 @@ from tkinter import ttk
 import configparser
 import ctypes
 import random
-from queue import Queue
 
 config = configparser.ConfigParser()
-path = 'global_settings.ini'
+path = 'global_settings_2.ini'
 config.read(path, encoding="UTF-8")
 
 # 全局设置
@@ -305,14 +304,14 @@ neon = pygame.image.load('neon/' + all_neon_name[neon_light]).convert_alpha()
 key_light = pygame.image.load(light_file_path).convert_alpha()
 
 # 透明效果
-bkg_trans_up = pygame.Surface((global_resolution_x, 85))
+bkg_trans_up = pygame.Surface((global_resolution_x, 80))
 bkg_trans_up.set_alpha(top_square_opacity)
-bkg_trans_middle = pygame.Surface((global_resolution_x, global_resolution_y - 285))
+bkg_trans_middle = pygame.Surface((global_resolution_x, global_resolution_y - 280))
 bkg_trans_middle.set_alpha(waterfall_opacity)
 bkg_trans_down = pygame.Surface((global_resolution_x, 200))
 bkg_trans_down.set_alpha(piano_key_opacity)
 bkg_trans_up.blit(bkg, (background_offset_x, background_offset_y))
-bkg_trans_middle.blit(bkg, (background_offset_x, background_offset_y - 85))
+bkg_trans_middle.blit(bkg, (background_offset_x, background_offset_y - 80))
 bkg_trans_down.blit(bkg, (background_offset_x, background_offset_y - (global_resolution_y - 200)))
 
 # 音符、五线谱
@@ -335,7 +334,7 @@ double_flat_w_trans = pygame.image.load('music_score/double_flat_w_trans.png').c
 restore_w_trans = pygame.image.load('music_score/restore_w_trans.png').convert_alpha()
 
 # 透明遮挡层
-trans_screen = pygame.Surface((global_resolution_x, global_resolution_y - 285))
+trans_screen = pygame.Surface((global_resolution_x, global_resolution_y - 280))
 trans_screen.set_alpha(trans_screen_opacity)
 trans_screen.fill(trans_screen_color)
 
@@ -599,10 +598,10 @@ note_low_y = [[772 + music_score_offset_y, False], [759 + music_score_offset_y, 
               [497 + music_score_offset_y, False]]
 
 # 初始化字体
-font1 = pygame.font.Font(font_path, 45)
-font2 = pygame.font.Font(font_path, 39)
-chord_font = pygame.font.Font(font_path, 64)
-note_list_font = pygame.font.Font(font_path, 36)
+font1 = pygame.font.Font(font_path, 37)
+font2 = pygame.font.Font(font_path, 37)
+chord_font = pygame.font.Font(font_path, 52)
+note_list_font = pygame.font.Font(font_path, 32)
 
 # 设置字体显示
 chord_text = chord_font.render('', True, chord_text_color)
@@ -744,43 +743,61 @@ def get_u_second():
 
 
 # 从输入设备读取midi信息
-cur_midi_signal = Queue()
 def input_midi():
-    global cur_midi_signal
-    global if_exit
-    if midi1 != 'Unable':
-        while True:
-            time.sleep(0.001)
-            if if_exit == 1:
-                break
-            c_all = midi1.read(10)
-            if len(c_all) > 0:
-                for c in c_all:
-                    cur_midi_signal.put(c)
-                    # Key Press
-                    if c[0][0] == 144 and midi2 != 'Unable':
-                        midi2.note_on(c[0][1], c[0][2])
-                    # Key Release
-                    elif c[0][0] == 128 and midi2 != 'Unable':
-                        midi2.note_off(c[0][1])
-                    # Sustain
-                    elif c[0][0] == 176 and midi2 != 'Unable':
-                        if c[0][1] == 64:
-                            if c[0][2] == 127:
-                                midi2.write_short(0xb0, 64, 127);
-                            elif c[0][2] == 0:
-                                midi2.write_short(0xb0, 64, 0);
-
-
-# 主循环读取midi信息
-def read_midi():
-    global cur_midi_signal
-    all_midi_data = []
-    for i in range(20):
-        if(cur_midi_signal.empty()):
+    global sustain
+    global on_sustain
+    global midi2
+    global midi1
+    global notes_count
+    global all_note_size
+    global key_note
+    global waterfalls
+    global sustain_state
+    while True:
+        if midi1 == 'Unable':
             break
-        all_midi_data.append(cur_midi_signal.get())
-    return all_midi_data
+        if if_exit == 1:
+            break
+        c_all = midi1.read(10)
+        if len(c_all) > 0:
+            for c in c_all:
+                if c[0][0] == 144:
+                    if sustain == 1:
+                        if c[0][1] in on_sustain:
+                            on_sustain.remove(c[0][1])
+                            if midi2 != 'Unable':
+                                midi2.note_off(c[0][1])
+                    if midi2 != 'Unable':
+                        midi2.note_on(c[0][1], c[0][2])
+                    notes_count[(c[0][1] - 21) % 12] += 1
+                    all_note_size += 1
+                    key_note.append(c[0][1] - 21)
+                    if mode_id == 0 or mode_id == 2:
+                        waterfalls[c[0][1] - 21].append([0, 0, 0, get_wf_color(c[0][1] - 21)])
+                elif c[0][0] == 128:
+                    if sustain == 0:
+                        if midi2 != 'Unable':
+                            midi2.note_off(c[0][1])
+                    elif sustain == 1:
+                        on_sustain.append(c[0][1])
+                    if len(key_note) > 0:
+                        key_note.remove(c[0][1] - 21)
+                        if (mode_id == 0 or mode_id == 2) and len(waterfalls[c[0][1] - 21]) - 1 >= 0:
+                            waterfalls[c[0][1] - 21][len(waterfalls[c[0][1] - 21]) - 1][0] = 1
+                elif c[0][0] == 176:
+                    if c[0][1] == 64:
+                        if c[0][2] == 127:
+                            sustain = 1
+                            sustain_state = font2.render('√', True, sustain_text_color)
+                        elif c[0][2] == 0:
+                            sustain = 0
+                            sustain_state = font2.render('×', True, sustain_text_color)
+                            for y in on_sustain:
+                                if (y - 21) not in key_note:
+                                    if midi2 != 'Unable':
+                                        midi2.note_off(y)
+                            on_sustain = []
+        time.sleep(0.001)
 
 
 # 获取和弦
@@ -971,40 +988,10 @@ else:
 
 # pygame主循环
 while True:
+
     # refresh time
     global_time = get_u_second() - base_time
     global_time_delta = int(global_time * time_delta / 10000)
-
-    # receive midi signals
-    if mode_id <= 2:
-        c_all = read_midi()
-        if len(c_all) > 0:
-            for c in c_all:
-                if c[0][0] == 144:
-                    if sustain == 1:
-                        if c[0][1] in on_sustain:
-                            on_sustain.remove(c[0][1])
-                    notes_count[(c[0][1] - 21) % 12] += 1
-                    all_note_size += 1
-                    key_note.append(c[0][1] - 21)
-                    if mode_id == 0 or mode_id == 2:
-                        waterfalls[c[0][1] - 21].append([0, 0, 0, get_wf_color(c[0][1] - 21)])
-                elif c[0][0] == 128:
-                    if sustain == 1:
-                        on_sustain.append(c[0][1])
-                    if len(key_note) > 0:
-                        key_note.remove(c[0][1] - 21)
-                        if (mode_id == 0 or mode_id == 2) and len(waterfalls[c[0][1] - 21]) - 1 >= 0:
-                            waterfalls[c[0][1] - 21][len(waterfalls[c[0][1] - 21]) - 1][0] = 1
-                elif c[0][0] == 176:
-                    if c[0][1] == 64:
-                        if c[0][2] == 127:
-                            sustain = 1
-                            sustain_state = font2.render('√', True, sustain_text_color)
-                        elif c[0][2] == 0:
-                            sustain = 0
-                            sustain_state = font2.render('×', True, sustain_text_color)
-                            on_sustain = []
 
     # set note (score only or waterfall up)
     if finished == 0 and (mode_id == 3 or mode_id == 5 or mode_id == 6):
@@ -1116,7 +1103,7 @@ while True:
 
     # print transparent screen (music score mode or decide manually)
     if print_trans_screen:
-        screen.blit(trans_screen, (0, 85))
+        screen.blit(trans_screen, (0, 80))
 
     # print black line above piano keys
     pygame.draw.rect(screen, (100, 100, 100), (0, global_resolution_y - 203, global_resolution_x, 3), 0)
@@ -1202,14 +1189,14 @@ while True:
 
     # print piano keys
     for i in range(52):
-        pygame.draw.rect(screen, 'white', (white_key_pos[white_key_reflect[i]], global_resolution_y - 200, 33, 198), 0)
+        pygame.draw.rect(screen, 'white', (white_key_pos[white_key_reflect[i]], global_resolution_y - 200, 33, 200), 0)
     for i in key_note:
         if white_key_or_not[i] == 1:
-            pygame.draw.rect(screen, WKcol, (white_key_pos[i] + 0, global_resolution_y - 200, 33, 198), 0)
+            pygame.draw.rect(screen, WKcol, (white_key_pos[i] + 0, global_resolution_y - 200, 33, 200), 0)
     for h in on_sustain:
         i = h - 21
         if white_key_or_not[i] == 1:
-            pygame.draw.rect(screen, WKcol_on_sus, (white_key_pos[i] + 0, global_resolution_y - 200, 33, 198), 0)
+            pygame.draw.rect(screen, WKcol_on_sus, (white_key_pos[i] + 0, global_resolution_y - 200, 33, 200), 0)
     for i in range(36):
         pygame.draw.rect(screen, 'black', (black_key_pos1[black_key_reflect[i]], global_resolution_y - 200, 20, 130), 0)
         pygame.draw.rect(screen, (75, 75, 75),
@@ -1226,19 +1213,19 @@ while True:
 
     # print transparent background
     if transparent_or_not == 1:
-        screen.blit(bkg_trans_middle, (0, 85))
+        screen.blit(bkg_trans_middle, (0, 80))
         screen.blit(bkg_trans_down, (0, global_resolution_y - 200))
 
     # print neon light
     if neon_flash == 1:
-        screen.blit(neon_flashing, (((global_resolution_x - 1920) / 2), global_resolution_y - 303))
+        screen.blit(neon_flashing, (((global_resolution_x - 1920) / 2), global_resolution_y - 302))
     else:
         if neon_light < neon_num:
-            screen.blit(neon, (((global_resolution_x - 1920) / 2), global_resolution_y - 303))
+            screen.blit(neon, (((global_resolution_x - 1920) / 2), global_resolution_y - 302))
 
     # print chord (with music score)
     if mode_id == 1 or mode_id == 2 or mode_id == 5 or mode_id == 6 or mode_id == 7:
-        screen.blit(chord_text, (1080 + music_score_offset_x, 390 + music_score_offset_y))
+        screen.blit(chord_text, (1080 + music_score_offset_x, 366 + music_score_offset_y))
 
     # print chord (waterfall single mode)
     if mode_id == 0 or mode_id == 3 or mode_id == 4:
@@ -1273,8 +1260,8 @@ while True:
         note_list_text_bt = note_list_font.render('Bass: ' + bass_note + '  Treble: ' + treble_note,
                                                   True, note_list_text_color)
         note_list_text = note_list_font.render(str(note_to_print), True, note_list_text_color)
-        screen.blit(note_list_text_bt, (1080 + music_score_offset_x, 505 + music_score_offset_y))
-        screen.blit(note_list_text, (1080 + music_score_offset_x, 575 + music_score_offset_y))
+        screen.blit(note_list_text_bt, (1080 + music_score_offset_x, 496 + music_score_offset_y))
+        screen.blit(note_list_text, (1080 + music_score_offset_x, 566 + music_score_offset_y))
 
     # print musicsheets and notes (music score)
     if mode_id == 1 or mode_id == 2 or mode_id == 5 or mode_id == 6 or mode_id == 7:
@@ -1622,22 +1609,22 @@ while True:
     # print square
     font_distance = {
         'Unsettled': 99999,
-        'C': 0,
-        'Db': 20,
-        'D': 0,
+        'C': -2,
+        'Db': 17,
+        'D': -2,
         'Eb': 13,
-        'E': -6,
-        'F': -6,
-        'Gb': 22,
-        'G': 0,
-        'Ab': 18,
+        'E': -3,
+        'F': -3,
+        'Gb': 17,
+        'G': -2,
+        'Ab': 17,
         'A': -2,
         'Bb': 16,
-        'B': -6
+        'B': -2
     }
 
     # 顶端矩形
-    pygame.draw.rect(screen, top_square_color, (0, 0, global_resolution_x, 85), 0)
+    pygame.draw.rect(screen, top_square_color, (0, 0, global_resolution_x, 80), 0)
 
     # 顶端矩形透明度调整（背景覆盖）
     if transparent_or_not == 1:
@@ -1662,11 +1649,11 @@ while True:
                     screen.blit(key_light, (black_key_pos1[i] + light_offset_black_x, global_resolution_y + light_offset_y))
 
     # 显示文字内容
-    screen.blit(sustain_label, (global_resolution_x - 300, 18))
-    screen.blit(sustain_state, (global_resolution_x - 47, 23))
-    screen.blit(major_key_print, (36, 18))
-    screen.blit(speed_print, ((global_resolution_x / 2) - 120, 18))
-    screen.blit(tonicization_print, (260 + font_distance[major_key], 25))
+    screen.blit(sustain_label, (global_resolution_x - 297, 5))
+    screen.blit(sustain_state, (global_resolution_x - 55, 3))
+    screen.blit(major_key_print, (42, 5))
+    screen.blit(speed_print, ((global_resolution_x / 2) - 120, 5))
+    screen.blit(tonicization_print, (242 + font_distance[major_key], 9))
 
     # 循环获取事件，监听事件状态
     for event in pygame.event.get():
@@ -1771,7 +1758,7 @@ while True:
                     bkg_set -= bkg_num
                 bkg = pygame.image.load(background_folder_path + '/' + all_bkg_name[bkg_set]).convert()
                 bkg_trans_up.blit(bkg, (background_offset_x, background_offset_y))
-                bkg_trans_middle.blit(bkg, (background_offset_x, background_offset_y - 85))
+                bkg_trans_middle.blit(bkg, (background_offset_x, background_offset_y - 80))
                 bkg_trans_down.blit(bkg, (background_offset_x, background_offset_y - (global_resolution_y - 200)))
             elif event.key == pygame.K_h:
                 key_light_open = 1 - key_light_open
