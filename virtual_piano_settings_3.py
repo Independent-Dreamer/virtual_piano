@@ -1649,11 +1649,11 @@ while True:
                     screen.blit(key_light, (black_key_pos1[i] + light_offset_black_x, global_resolution_y + light_offset_y))
 
     # 显示文字内容
-    screen.blit(sustain_label, (global_resolution_x - 296, 14))
-    screen.blit(sustain_state, (global_resolution_x - 52, 13))
-    screen.blit(major_key_print, (42, 14))
-    screen.blit(speed_print, ((global_resolution_x / 2) - 120, 14))
-    screen.blit(tonicization_print, (236 + font_distance[major_key], 20))
+    screen.blit(sustain_label, (global_resolution_x - 296, 16))
+    screen.blit(sustain_state, (global_resolution_x - 52, 15))
+    screen.blit(major_key_print, (42, 16))
+    screen.blit(speed_print, ((global_resolution_x / 2) - 120, 16))
+    screen.blit(tonicization_print, (236 + font_distance[major_key], 22))
 
     # 循环获取事件，监听事件状态
     for event in pygame.event.get():
