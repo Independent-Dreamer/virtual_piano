@@ -1,6 +1,12 @@
 # Virtual_Piano
 
+### 20230428
+
+增加了一些新的字体适配，global_settings_(1,2,3).ini和virtual_piano_settings_(1,2,3).py对应三种不同字体和设置
+
 ### 演示视频：
+
+目前该演示视频已过时（录制时无霓虹灯、透明瀑布流等效果），可进入主页查看最新视频
 
 https://www.bilibili.com/video/BV1D8411x78X
 
