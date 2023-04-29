@@ -23,6 +23,7 @@ config.read(path, encoding="UTF-8")
 # 全局设置
 background_folder_path = config.get('ReadFiles', 'background_folder_path')
 font_path = config.get('ReadFiles', 'font_path')
+font_settings_path = config.get('ReadFiles', 'font_settings_path')
 midi_file_path = config.get('ReadFiles', 'midi_file_path')
 light_file_path = config.get('ReadFiles', 'light_file_path')
 set_root_from_file = config.getint('SetRootFromFile', 'set_root_from_file')
@@ -102,6 +103,42 @@ music_score_offset_y = config.getint('MusicScoreOffset', 'music_score_offset_y')
 flash_neon_prepare = config.getint('FlashNeonLight', 'flash_neon_prepare')
 flash_neon_pic_path = config.get('FlashNeonLight', 'flash_neon_pic_path')
 flash_neon_gap_time = config.getfloat('FlashNeonLight', 'flash_neon_gap_time')
+
+# 字体ini参数
+config = configparser.ConfigParser()
+config.read(font_settings_path, encoding="UTF-8")
+font_size_1 = config.getint('FontSize', 'font_size_1')
+font_size_2 = config.getint('FontSize', 'font_size_2')
+font_size_3 = config.getint('FontSize', 'font_size_3')
+font_size_4 = config.getint('FontSize', 'font_size_4')
+sustain_label_offset_x = config.getint('SustainLabel', 'sustain_label_offset_x')
+sustain_label_offset_y = config.getint('SustainLabel', 'sustain_label_offset_y')
+sustain_state_offset_x = config.getint('SustainState', 'sustain_state_offset_x')
+sustain_state_offset_y = config.getint('SustainState', 'sustain_state_offset_y')
+major_key_offset_x = config.getint('MajorKey', 'major_key_offset_x')
+major_key_offset_y = config.getint('MajorKey', 'major_key_offset_y')
+speed_label_offset_x = config.getint('SpeedLabel', 'speed_label_offset_x')
+speed_label_offset_y = config.getint('SpeedLabel', 'speed_label_offset_y')
+tonicization_offset_x = config.getint('Tonicization', 'tonicization_offset_x')
+tonicization_offset_y = config.getint('Tonicization', 'tonicization_offset_y')
+C_offset = config.getint('Tonicization', 'C_offset')
+Db_offset = config.getint('Tonicization', 'Db_offset')
+D_offset = config.getint('Tonicization', 'D_offset')
+Eb_offset = config.getint('Tonicization', 'Eb_offset')
+E_offset = config.getint('Tonicization', 'E_offset')
+F_offset = config.getint('Tonicization', 'F_offset')
+Gb_offset = config.getint('Tonicization', 'Gb_offset')
+G_offset = config.getint('Tonicization', 'G_offset')
+Ab_offset = config.getint('Tonicization', 'Ab_offset')
+A_offset = config.getint('Tonicization', 'A_offset')
+Bb_offset = config.getint('Tonicization', 'Bb_offset')
+B_offset = config.getint('Tonicization', 'B_offset')
+chord_text_waterfall_up_y = config.getint('ChordText', 'chord_text_waterfall_up_y')
+chord_text_waterfall_middle_y = config.getint('ChordText', 'chord_text_waterfall_middle_y')
+chord_text_waterfall_down_y = config.getint('ChordText', 'chord_text_waterfall_down_y')
+chord_text_score_offset_y = config.getint('ChordText', 'chord_text_score_offset_y')
+bass_treble_text_offset_y = config.getint('ChordText', 'bass_treble_text_offset_y')
+note_list_text_offset_y = config.getint('ChordText', 'note_list_text_offset_y')
 
 # 是否从midi文件读取根音
 if set_root_from_file == 1:
@@ -283,7 +320,7 @@ else:
 screen = pygame.display.set_mode((global_resolution_x, global_resolution_y))
 
 # 设置窗口标题，窗口icon
-pygame.display.set_caption('Virtual Piano')
+pygame.display.set_caption(' Fantasia (Piano Visualizer) ')
 img = pygame.image.load("icon/DEFAULT_ICON.ico")
 pygame.display.set_icon(img)
 
@@ -305,14 +342,14 @@ neon = pygame.image.load('neon/' + all_neon_name[neon_light]).convert_alpha()
 key_light = pygame.image.load(light_file_path).convert_alpha()
 
 # 透明效果
-bkg_trans_up = pygame.Surface((global_resolution_x, 85))
+bkg_trans_up = pygame.Surface((global_resolution_x, 80))
 bkg_trans_up.set_alpha(top_square_opacity)
-bkg_trans_middle = pygame.Surface((global_resolution_x, global_resolution_y - 285))
+bkg_trans_middle = pygame.Surface((global_resolution_x, global_resolution_y - 280))
 bkg_trans_middle.set_alpha(waterfall_opacity)
 bkg_trans_down = pygame.Surface((global_resolution_x, 200))
 bkg_trans_down.set_alpha(piano_key_opacity)
 bkg_trans_up.blit(bkg, (background_offset_x, background_offset_y))
-bkg_trans_middle.blit(bkg, (background_offset_x, background_offset_y - 85))
+bkg_trans_middle.blit(bkg, (background_offset_x, background_offset_y - 80))
 bkg_trans_down.blit(bkg, (background_offset_x, background_offset_y - (global_resolution_y - 200)))
 
 # 音符、五线谱
@@ -335,7 +372,7 @@ double_flat_w_trans = pygame.image.load('music_score/double_flat_w_trans.png').c
 restore_w_trans = pygame.image.load('music_score/restore_w_trans.png').convert_alpha()
 
 # 透明遮挡层
-trans_screen = pygame.Surface((global_resolution_x, global_resolution_y - 285))
+trans_screen = pygame.Surface((global_resolution_x, global_resolution_y - 280))
 trans_screen.set_alpha(trans_screen_opacity)
 trans_screen.fill(trans_screen_color)
 
@@ -599,10 +636,10 @@ note_low_y = [[772 + music_score_offset_y, False], [759 + music_score_offset_y, 
               [497 + music_score_offset_y, False]]
 
 # 初始化字体
-font1 = pygame.font.Font(font_path, 45)
-font2 = pygame.font.Font(font_path, 39)
-chord_font = pygame.font.Font(font_path, 64)
-note_list_font = pygame.font.Font(font_path, 36)
+font1 = pygame.font.Font(font_path, font_size_1)
+font2 = pygame.font.Font(font_path, font_size_2)
+chord_font = pygame.font.Font(font_path, font_size_3)
+note_list_font = pygame.font.Font(font_path, font_size_4)
 
 # 设置字体显示
 chord_text = chord_font.render('', True, chord_text_color)
@@ -1116,7 +1153,7 @@ while True:
 
     # print transparent screen (music score mode or decide manually)
     if print_trans_screen:
-        screen.blit(trans_screen, (0, 85))
+        screen.blit(trans_screen, (0, 80))
 
     # print black line above piano keys
     pygame.draw.rect(screen, (100, 100, 100), (0, global_resolution_y - 203, global_resolution_x, 3), 0)
@@ -1202,14 +1239,14 @@ while True:
 
     # print piano keys
     for i in range(52):
-        pygame.draw.rect(screen, 'white', (white_key_pos[white_key_reflect[i]], global_resolution_y - 200, 33, 198), 0)
+        pygame.draw.rect(screen, 'white', (white_key_pos[white_key_reflect[i]], global_resolution_y - 200, 33, 200), 0)
     for i in key_note:
         if white_key_or_not[i] == 1:
-            pygame.draw.rect(screen, WKcol, (white_key_pos[i] + 0, global_resolution_y - 200, 33, 198), 0)
+            pygame.draw.rect(screen, WKcol, (white_key_pos[i] + 0, global_resolution_y - 200, 33, 200), 0)
     for h in on_sustain:
         i = h - 21
         if white_key_or_not[i] == 1:
-            pygame.draw.rect(screen, WKcol_on_sus, (white_key_pos[i] + 0, global_resolution_y - 200, 33, 198), 0)
+            pygame.draw.rect(screen, WKcol_on_sus, (white_key_pos[i] + 0, global_resolution_y - 200, 33, 200), 0)
     for i in range(36):
         pygame.draw.rect(screen, 'black', (black_key_pos1[black_key_reflect[i]], global_resolution_y - 200, 20, 130), 0)
         pygame.draw.rect(screen, (75, 75, 75),
@@ -1226,28 +1263,28 @@ while True:
 
     # print transparent background
     if transparent_or_not == 1:
-        screen.blit(bkg_trans_middle, (0, 85))
+        screen.blit(bkg_trans_middle, (0, 80))
         screen.blit(bkg_trans_down, (0, global_resolution_y - 200))
 
     # print neon light
     if neon_flash == 1:
-        screen.blit(neon_flashing, (((global_resolution_x - 1920) / 2), global_resolution_y - 303))
+        screen.blit(neon_flashing, (((global_resolution_x - 1920) / 2), global_resolution_y - 302))
     else:
         if neon_light < neon_num:
-            screen.blit(neon, (((global_resolution_x - 1920) / 2), global_resolution_y - 303))
+            screen.blit(neon, (((global_resolution_x - 1920) / 2), global_resolution_y - 302))
 
     # print chord (with music score)
     if mode_id == 1 or mode_id == 2 or mode_id == 5 or mode_id == 6 or mode_id == 7:
-        screen.blit(chord_text, (1080 + music_score_offset_x, 390 + music_score_offset_y))
+        screen.blit(chord_text, (1080 + music_score_offset_x, chord_text_score_offset_y + music_score_offset_y))
 
     # print chord (waterfall single mode)
     if mode_id == 0 or mode_id == 3 or mode_id == 4:
         if print_chord == 1:
-            screen.blit(chord_text, (50, global_resolution_y - 305))
+            screen.blit(chord_text, (50, global_resolution_y - chord_text_waterfall_down_y))
         if print_chord == 2:
-            screen.blit(chord_text, (50, 100))
+            screen.blit(chord_text, (50, chord_text_waterfall_up_y))
         if print_chord == 3:
-            screen.blit(chord_text, (50, (global_resolution_y / 2) - 120))
+            screen.blit(chord_text, (50, (global_resolution_y / 2) - chord_text_waterfall_middle_y))
 
     # print notes in list
     if mode_id == 1 or mode_id == 2 or mode_id == 5 or mode_id == 6 or mode_id == 7:
@@ -1273,8 +1310,8 @@ while True:
         note_list_text_bt = note_list_font.render('Bass: ' + bass_note + '  Treble: ' + treble_note,
                                                   True, note_list_text_color)
         note_list_text = note_list_font.render(str(note_to_print), True, note_list_text_color)
-        screen.blit(note_list_text_bt, (1080 + music_score_offset_x, 505 + music_score_offset_y))
-        screen.blit(note_list_text, (1080 + music_score_offset_x, 575 + music_score_offset_y))
+        screen.blit(note_list_text_bt, (1080 + music_score_offset_x, bass_treble_text_offset_y + music_score_offset_y))
+        screen.blit(note_list_text, (1080 + music_score_offset_x, note_list_text_offset_y + music_score_offset_y))
 
     # print musicsheets and notes (music score)
     if mode_id == 1 or mode_id == 2 or mode_id == 5 or mode_id == 6 or mode_id == 7:
@@ -1622,22 +1659,22 @@ while True:
     # print square
     font_distance = {
         'Unsettled': 99999,
-        'C': 0,
-        'Db': 20,
-        'D': 0,
-        'Eb': 13,
-        'E': -6,
-        'F': -6,
-        'Gb': 22,
-        'G': 0,
-        'Ab': 18,
-        'A': -2,
-        'Bb': 16,
-        'B': -6
+        'C': C_offset,
+        'Db': Db_offset,
+        'D': D_offset,
+        'Eb': Eb_offset,
+        'E': E_offset,
+        'F': F_offset,
+        'Gb': Gb_offset,
+        'G': G_offset,
+        'Ab': Ab_offset,
+        'A': A_offset,
+        'Bb': Bb_offset,
+        'B': B_offset
     }
 
     # 顶端矩形
-    pygame.draw.rect(screen, top_square_color, (0, 0, global_resolution_x, 85), 0)
+    pygame.draw.rect(screen, top_square_color, (0, 0, global_resolution_x, 80), 0)
 
     # 顶端矩形透明度调整（背景覆盖）
     if transparent_or_not == 1:
@@ -1662,11 +1699,11 @@ while True:
                     screen.blit(key_light, (black_key_pos1[i] + light_offset_black_x, global_resolution_y + light_offset_y))
 
     # 显示文字内容
-    screen.blit(sustain_label, (global_resolution_x - 300, 18))
-    screen.blit(sustain_state, (global_resolution_x - 47, 23))
-    screen.blit(major_key_print, (36, 18))
-    screen.blit(speed_print, ((global_resolution_x / 2) - 120, 18))
-    screen.blit(tonicization_print, (260 + font_distance[major_key], 25))
+    screen.blit(sustain_label, (global_resolution_x - sustain_label_offset_x, sustain_label_offset_y))
+    screen.blit(sustain_state, (global_resolution_x - sustain_state_offset_x, sustain_state_offset_y))
+    screen.blit(major_key_print, (major_key_offset_x, major_key_offset_y))
+    screen.blit(speed_print, ((global_resolution_x / 2) - speed_label_offset_x, speed_label_offset_y))
+    screen.blit(tonicization_print, (tonicization_offset_x + font_distance[major_key], tonicization_offset_y))
 
     # 循环获取事件，监听事件状态
     for event in pygame.event.get():
@@ -1771,7 +1808,7 @@ while True:
                     bkg_set -= bkg_num
                 bkg = pygame.image.load(background_folder_path + '/' + all_bkg_name[bkg_set]).convert()
                 bkg_trans_up.blit(bkg, (background_offset_x, background_offset_y))
-                bkg_trans_middle.blit(bkg, (background_offset_x, background_offset_y - 85))
+                bkg_trans_middle.blit(bkg, (background_offset_x, background_offset_y - 80))
                 bkg_trans_down.blit(bkg, (background_offset_x, background_offset_y - (global_resolution_y - 200)))
             elif event.key == pygame.K_h:
                 key_light_open = 1 - key_light_open

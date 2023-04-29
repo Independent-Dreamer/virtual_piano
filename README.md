@@ -2,7 +2,13 @@
 
 ### 更新内容 After 2023-04-28：
 
-增加了一些新的字体适配，global_settings_(1,2,3).ini 和 virtual_piano_settings_(1,2,3).py 对应三种不同字体和设置
+注意！！！目前发现pygame库已更新，安装最新的pygame库会对键盘操作无响应（代码未进行更改）因此安装pygame库时应指定版本2.0.0
+
+pip install pygame==2.0.0
+
+增加了一些新的字体适配方法，global_settings.ini 中包含字体路径、字体位置偏移量的相关设置
+
+删除了原先的TW CEN MT字体（显示存在一些问题）
 
 ### 演示视频：
 
@@ -44,9 +50,13 @@ https://www.bilibili.com/video/BV1D8411x78X
 
 ### 运行方式：
 
-安装pygame, mido等相关库，执行virtual_piano.py或virtual_piano_mt.py（针对多线程实现midi输入做了一些改进）
+安装pygame==2.0.0, mido等相关库，执行 piano_main.py 或 piano_main_mt.py
 
-### global_settings.ini中的相关设置：
+其中 piano_main.py 不使用多线程处理midi输入事件，且输入踏板信号会在输出端转换为音符拉长信号
+
+而 piano_main_mt.py 针对多线程实现midi输入做了一些改进，且输入踏板信号在输出端仍为踏板信号
+
+### global_settings.ini 中的相关设置：
 
 set_root_from_file		仅midi播放模式可用，是否从已保存的midi文件读取根音（避免一些转位和弦的误识别）
 
@@ -135,6 +145,24 @@ flash_neon_prepare		是否提前载入动态霓虹灯效果
 flash_neon_pic_path		动态霓虹灯效果图片路径（逐帧）
 
 flash_neon_gap_time	霓虹灯每一帧间隔
+
+### fonts/fontxx_settings.ini 中的相关设置：
+
+font_size_1		顶端字体大小
+font_size_2		顶端延音踏板作用等标记的字体大小
+font_size_3		和弦字体大小
+font_size_4		五线谱模式下对应的音名标记字体大小
+[SustainLabel]	延音踏板字体偏移量
+[SustainState]	延音踏板作用标记字体偏移量
+[MajorKey]		调性字体偏移量
+[SpeedLabel]	音符速度字体偏移量
+[Tonicization]	离调标记字体偏移量，对应到每个调式
+chord_text_waterfall_up_y		瀑布流模式下和弦标记纵坐标偏移量（和弦处于上方）
+chord_text_waterfall_middle_y	瀑布流模式下和弦标记纵坐标偏移量（和弦处于中部）
+chord_text_waterfall_down_y		瀑布流模式下和弦标记纵坐标偏移量（和弦处于下方）
+chord_text_score_offset_y		五线谱模式下和弦标记纵坐标偏移量
+bass_treble_text_offset_y			五线谱模式下高/低音标记纵坐标偏移量
+note_list_text_offset_y = 566		五线谱模式下音名标记纵坐标偏移量
 
 ### 存在问题：
 
