@@ -58,7 +58,7 @@ https://www.bilibili.com/video/BV1D8411x78X
 
 而 piano_main_mt.py 针对多线程实现midi输入做了一些改进，且输入踏板信号在输出端仍为踏板信号
 
-piano_main_sustain.py 在播放midi文件时，可以单独从一个midi文件读取踏板信号（该midi文件用音符作为踏板信号，按下/松开任意音符为按下/松开踏板）
+piano_main_read_sustain.py 在播放midi文件时，可以单独从一个midi文件读取踏板信号（该midi文件用音符作为踏板信号，按下/松开任意音符为按下/松开踏板）
 
 ### global_settings.ini 中的相关设置：
 
