@@ -10,6 +10,8 @@ pip install pygame==2.0.0
 
 删除了原先的TW CEN MT字体（显示存在一些问题）
 
+增加从单独的midi文件读取踏板功能（把音符事件当作踏板），见 piano_main_read_sustain.py
+
 ### 演示视频：
 
 目前该演示视频已过时（录制时无霓虹灯、透明瀑布流等效果），可进入主页查看最新视频
@@ -56,9 +58,13 @@ https://www.bilibili.com/video/BV1D8411x78X
 
 而 piano_main_mt.py 针对多线程实现midi输入做了一些改进，且输入踏板信号在输出端仍为踏板信号
 
+piano_main_sustain.py 在播放midi文件时，可以单独从一个midi文件读取踏板信号（该midi文件用音符作为踏板信号，按下/松开任意音符为按下/松开踏板）
+
 ### global_settings.ini 中的相关设置：
 
-set_root_from_file		仅midi播放模式可用，是否从已保存的midi文件读取根音（避免一些转位和弦的误识别）
+set_root_from_file		仅midi播放模式可用，是否从指定的midi文件读取根音（避免一些转位和弦的误识别）
+
+get_sustain_from_file	仅midi播放模式可用，是否从指定的midi文件读取踏板信号（该midi文件用音符作为踏板信号，按下/松开任意音符为按下/松开踏板）
 
 background_folder_path	背景图片目录（无需修改文件名）
 
@@ -67,6 +73,8 @@ font_path			字体文件目录（更改字体可能会显示错位，需要在vi
 midi_file_path		midi播放模式播放的midi文件（暂时只支持一个轨道）
 
 root_file_path		当set_root_from_file = 1时，从指定midi文件读取根音
+
+sustain_file_path		当get_sustain_from_file = 1时，从指定midi文件读取踏板信号
 
 light_file_path		白色灯光png文件路径
 
@@ -139,6 +147,8 @@ piano_key_offset		钢琴键水平位移值
 time_delta		midi播放速度
 
 root_delta		当set_root_from_file = 1时，该值为待播放midi文件与根音midi文件时间差
+
+sustain_delta	当get_sustain_from_file = 1时，该值为待播放midi文件与踏板midi文件时间差
 
 flash_neon_prepare		是否提前载入动态霓虹灯效果
 
