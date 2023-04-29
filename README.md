@@ -149,19 +149,33 @@ flash_neon_gap_time	霓虹灯每一帧间隔
 ### fonts/fontxx_settings.ini 中的相关设置：
 
 font_size_1		顶端字体大小
+
 font_size_2		顶端延音踏板作用等标记的字体大小
+
 font_size_3		和弦字体大小
+
 font_size_4		五线谱模式下对应的音名标记字体大小
+
 [SustainLabel]	延音踏板字体偏移量
+
 [SustainState]	延音踏板作用标记字体偏移量
+
 [MajorKey]		调性字体偏移量
+
 [SpeedLabel]	音符速度字体偏移量
+
 [Tonicization]	离调标记字体偏移量，对应到每个调式
+
 chord_text_waterfall_up_y		瀑布流模式下和弦标记纵坐标偏移量（和弦处于上方）
+
 chord_text_waterfall_middle_y	瀑布流模式下和弦标记纵坐标偏移量（和弦处于中部）
+
 chord_text_waterfall_down_y		瀑布流模式下和弦标记纵坐标偏移量（和弦处于下方）
+
 chord_text_score_offset_y		五线谱模式下和弦标记纵坐标偏移量
+
 bass_treble_text_offset_y			五线谱模式下高/低音标记纵坐标偏移量
+
 note_list_text_offset_y = 566		五线谱模式下音名标记纵坐标偏移量
 
 ### 存在问题：
