@@ -12,6 +12,8 @@ pip install pygame==2.0.0
 
 增加从单独的midi文件读取踏板功能（把音符事件当作踏板），见 piano_main_read_sustain.py
 
+顶端矩形宽度可更改
+
 ### 演示视频：
 
 目前该演示视频已过时（录制时无霓虹灯、透明瀑布流等效果），可进入主页查看最新视频
@@ -123,6 +125,8 @@ WaterFallOffset		瀑布流偏移量
 [SpeedTextColor]		速度字体颜色RGB值
 
 [TopSquareColor]		顶端矩形颜色RGB值
+
+[TopSquareWidth]		顶端矩形宽度
 
 [TransScreenColor]		背景前透明矩形颜色RGB值
 

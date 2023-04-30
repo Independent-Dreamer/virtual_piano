@@ -93,6 +93,7 @@ trans_screen_opacity = config.getint('TransScreenOpacity', 'trans_screen_opacity
 waterfall_opacity = config.getint('WaterFallOpacity', 'waterfall_opacity')
 piano_key_opacity = config.getint('PianoKeyOpacity', 'piano_key_opacity')
 top_square_opacity = config.getint('TopSquareOpacity', 'top_square_opacity')
+top_square_width = config.getint('TopSquareWidth', 'top_square_width')
 global_resolution_x = config.getint('GlobalResolution', 'global_resolution_x')  # 分辨率x（修改可能显示不正常）
 global_resolution_y = config.getint('GlobalResolution', 'global_resolution_y')  # 分辨率y
 background_offset_x = config.getint('BackGroundOffset', 'bkg_offset_x')
@@ -342,14 +343,14 @@ neon = pygame.image.load('neon/' + all_neon_name[neon_light]).convert_alpha()
 key_light = pygame.image.load(light_file_path).convert_alpha()
 
 # 透明效果
-bkg_trans_up = pygame.Surface((global_resolution_x, 80))
+bkg_trans_up = pygame.Surface((global_resolution_x, top_square_width))
 bkg_trans_up.set_alpha(top_square_opacity)
-bkg_trans_middle = pygame.Surface((global_resolution_x, global_resolution_y - 280))
+bkg_trans_middle = pygame.Surface((global_resolution_x, global_resolution_y - 200 - top_square_width))
 bkg_trans_middle.set_alpha(waterfall_opacity)
 bkg_trans_down = pygame.Surface((global_resolution_x, 200))
 bkg_trans_down.set_alpha(piano_key_opacity)
 bkg_trans_up.blit(bkg, (background_offset_x, background_offset_y))
-bkg_trans_middle.blit(bkg, (background_offset_x, background_offset_y - 80))
+bkg_trans_middle.blit(bkg, (background_offset_x, background_offset_y - top_square_width))
 bkg_trans_down.blit(bkg, (background_offset_x, background_offset_y - (global_resolution_y - 200)))
 
 # 音符、五线谱
@@ -372,7 +373,7 @@ double_flat_w_trans = pygame.image.load('music_score/double_flat_w_trans.png').c
 restore_w_trans = pygame.image.load('music_score/restore_w_trans.png').convert_alpha()
 
 # 透明遮挡层
-trans_screen = pygame.Surface((global_resolution_x, global_resolution_y - 280))
+trans_screen = pygame.Surface((global_resolution_x, global_resolution_y - 200 - top_square_width))
 trans_screen.set_alpha(trans_screen_opacity)
 trans_screen.fill(trans_screen_color)
 
@@ -1153,7 +1154,7 @@ while True:
 
     # print transparent screen (music score mode or decide manually)
     if print_trans_screen:
-        screen.blit(trans_screen, (0, 80))
+        screen.blit(trans_screen, (0, top_square_width))
 
     # print black line above piano keys
     pygame.draw.rect(screen, (100, 100, 100), (0, global_resolution_y - 203, global_resolution_x, 3), 0)
@@ -1263,7 +1264,7 @@ while True:
 
     # print transparent background
     if transparent_or_not == 1:
-        screen.blit(bkg_trans_middle, (0, 80))
+        screen.blit(bkg_trans_middle, (0, top_square_width))
         screen.blit(bkg_trans_down, (0, global_resolution_y - 200))
 
     # print neon light
@@ -1674,7 +1675,7 @@ while True:
     }
 
     # 顶端矩形
-    pygame.draw.rect(screen, top_square_color, (0, 0, global_resolution_x, 80), 0)
+    pygame.draw.rect(screen, top_square_color, (0, 0, global_resolution_x, top_square_width), 0)
 
     # 顶端矩形透明度调整（背景覆盖）
     if transparent_or_not == 1:
@@ -1808,7 +1809,7 @@ while True:
                     bkg_set -= bkg_num
                 bkg = pygame.image.load(background_folder_path + '/' + all_bkg_name[bkg_set]).convert()
                 bkg_trans_up.blit(bkg, (background_offset_x, background_offset_y))
-                bkg_trans_middle.blit(bkg, (background_offset_x, background_offset_y - 80))
+                bkg_trans_middle.blit(bkg, (background_offset_x, background_offset_y - top_square_width))
                 bkg_trans_down.blit(bkg, (background_offset_x, background_offset_y - (global_resolution_y - 200)))
             elif event.key == pygame.K_h:
                 key_light_open = 1 - key_light_open
