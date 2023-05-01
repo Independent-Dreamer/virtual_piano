@@ -10,9 +10,11 @@ pip install pygame==2.0.0
 
 删除了原先的TW CEN MT字体（显示存在一些问题）
 
-增加从单独的midi文件读取踏板功能（把音符事件当作踏板），见 piano_main_read_sustain.py
+增加从单独的midi文件读取踏板功能（把音符事件当作踏板）
 
 顶端矩形宽度可更改
+
+更改了和弦显示样式
 
 ### 演示视频：
 
@@ -54,13 +56,7 @@ https://www.bilibili.com/video/BV1D8411x78X
 
 ### 运行方式：
 
-安装pygame==2.0.0, mido等相关库，执行 piano_main.py 或 piano_main_mt.py
-
-其中 piano_main.py 不使用多线程处理midi输入事件，且输入踏板信号会在输出端转换为音符拉长信号
-
-而 piano_main_mt.py 针对多线程实现midi输入做了一些改进，且输入踏板信号在输出端仍为踏板信号
-
-piano_main_read_sustain.py 在播放midi文件时，可以单独从一个midi文件读取踏板信号（该midi文件用音符作为踏板信号，按下/松开任意音符为按下/松开踏板）
+安装pygame==2.0.0, mido等相关库，执行 piano_main.py 
 
 ### global_settings.ini 中的相关设置：
 
@@ -70,7 +66,9 @@ get_sustain_from_file	仅midi播放模式可用，是否从指定的midi文件�
 
 background_folder_path	背景图片目录（无需修改文件名）
 
-font_path			字体文件目录（更改字体可能会显示错位，需要在virtual_piano.py中修改相关位置参数）
+font_path			字体文件目录（更改字体可能会显示错位，需要在ini中修改相关位置参数）
+
+font_settings_path	字体设置目录（对应字体大小、偏移量等值）
 
 midi_file_path		midi播放模式播放的midi文件（暂时只支持一个轨道）
 
@@ -166,9 +164,13 @@ font_size_1		顶端字体大小
 
 font_size_2		顶端延音踏板作用等标记的字体大小
 
-font_size_3		和弦字体大小
+font_size_3		五线谱模式下和弦字体大小
 
 font_size_4		五线谱模式下对应的音名标记字体大小
+
+font_size_5		单独瀑布流模式下对应的和弦字体大小
+
+font_size_6		单独瀑布流模式下对应的音名标记字体大小
 
 [SustainLabel]	延音踏板字体偏移量
 
@@ -180,17 +182,23 @@ font_size_4		五线谱模式下对应的音名标记字体大小
 
 [Tonicization]	离调标记字体偏移量，对应到每个调式
 
-chord_text_waterfall_up_y		瀑布流模式下和弦标记纵坐标偏移量（和弦处于上方）
-
-chord_text_waterfall_middle_y	瀑布流模式下和弦标记纵坐标偏移量（和弦处于中部）
-
-chord_text_waterfall_down_y		瀑布流模式下和弦标记纵坐标偏移量（和弦处于下方）
-
 chord_text_score_offset_y		五线谱模式下和弦标记纵坐标偏移量
 
 bass_treble_text_offset_y			五线谱模式下高/低音标记纵坐标偏移量
 
 note_list_text_offset_y = 566		五线谱模式下音名标记纵坐标偏移量
+
+waterfall_chord_mode_1(2,3)_x		单独瀑布流模式下和弦标记横坐标偏移量（默认使用位置1，按P切换2，3）
+
+waterfall_chord_mode_1(2,3)_y		单独瀑布流模式下和弦标记纵坐标偏移量
+
+waterfall_bass_treble_mode_1(2,3)_x		单独瀑布流模式下高/低音标记横坐标偏移量
+
+waterfall_bass_treble_mode_1(2,3)_y		单独瀑布流模式下高/低音标记纵坐标偏移量
+
+waterfall_note_list_mode_1(2,3)_x			单独瀑布流模式下音名标记横坐标偏移量
+
+waterfall_note_list_mode_1(2,3)_y			单独瀑布流模式下音名标记纵坐标偏移量
 
 ### 存在问题：
 

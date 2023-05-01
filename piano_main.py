@@ -970,6 +970,7 @@ def get_wf_color(key_pos):
                         to_return[1][1] - black_color_dim_fill, to_return[1][2] - black_color_dim_fill]
     return [tuple(to_return[0]), tuple(to_return[1])]
 
+
 neon_flashing = neon
 def flash_neon():
     global neon_flashing
@@ -987,6 +988,7 @@ def flash_neon():
                 break
             neon_flashing = neon_flash_list[i]
             time.sleep(flash_neon_gap_time)
+
 
 # 若为MIDI播放模式，则读取音符
 if mode_id >= 3:
