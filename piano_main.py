@@ -14,6 +14,7 @@ from tkinter import ttk
 import configparser
 import ctypes
 import random
+from queue import Queue
 
 config = configparser.ConfigParser()
 path = 'global_settings.ini'
@@ -26,6 +27,7 @@ font_settings_path = config.get('ReadFiles', 'font_settings_path')
 midi_file_path = config.get('ReadFiles', 'midi_file_path')
 light_file_path = config.get('ReadFiles', 'light_file_path')
 set_root_from_file = config.getint('SetRootFromFile', 'set_root_from_file')
+get_sustain_from_file = config.getint('GetSustainFromFile', 'get_sustain_from_file')
 key_light_open = config.getint('KeyLight', 'key_light_open')
 light_on_sustain = config.getint('KeyLight', 'light_on_sustain')
 light_offset_white_x = config.getint('KeyLight', 'light_offset_white_x')
@@ -63,6 +65,7 @@ BKcol_on_sus = (config.getint('BlackKeyOnSustain', 'BKcol_sus_R'), config.getint
 waterfall_color_control = config.getfloat('WaterFallColorControl', 'waterfall_color_control')
 time_delta = config.getfloat('TimeDelta', 'time_delta')  # 速度微调（播放MIDI用）
 root_delta = config.getfloat('RootDelta', 'root_delta')  # 根音与音符出现的时间差（MODE2专用）
+sustain_delta = config.getfloat('SustainDelta', 'sustain_delta')  # 踏板与音符出现的时间差（MODE2专用）
 chord_text_color = (
     config.getint('ChordTextColor', 'chord_text_color_R'), config.getint('ChordTextColor', 'chord_text_color_G'),
     config.getint('ChordTextColor', 'chord_text_color_B'))  # 和弦text显示颜色
@@ -111,6 +114,8 @@ font_size_1 = config2.getint('FontSize', 'font_size_1')
 font_size_2 = config2.getint('FontSize', 'font_size_2')
 font_size_3 = config2.getint('FontSize', 'font_size_3')
 font_size_4 = config2.getint('FontSize', 'font_size_4')
+font_size_5 = config2.getint('FontSize', 'font_size_5')
+font_size_6 = config2.getint('FontSize', 'font_size_6')
 sustain_label_offset_x = config2.getint('SustainLabel', 'sustain_label_offset_x')
 sustain_label_offset_y = config2.getint('SustainLabel', 'sustain_label_offset_y')
 sustain_state_offset_x = config2.getint('SustainState', 'sustain_state_offset_x')
@@ -133,18 +138,39 @@ Ab_offset = config2.getint('Tonicization', 'Ab_offset')
 A_offset = config2.getint('Tonicization', 'A_offset')
 Bb_offset = config2.getint('Tonicization', 'Bb_offset')
 B_offset = config2.getint('Tonicization', 'B_offset')
-chord_text_waterfall_up_y = config2.getint('ChordText', 'chord_text_waterfall_up_y')
-chord_text_waterfall_middle_y = config2.getint('ChordText', 'chord_text_waterfall_middle_y')
-chord_text_waterfall_down_y = config2.getint('ChordText', 'chord_text_waterfall_down_y')
 chord_text_score_offset_y = config2.getint('ChordText', 'chord_text_score_offset_y')
 bass_treble_text_offset_y = config2.getint('ChordText', 'bass_treble_text_offset_y')
 note_list_text_offset_y = config2.getint('ChordText', 'note_list_text_offset_y')
+waterfall_chord_mode_1_x = config2.getint('ChordText', 'waterfall_chord_mode_1_x')
+waterfall_chord_mode_1_y = config2.getint('ChordText', 'waterfall_chord_mode_1_y')
+waterfall_bass_treble_mode_1_x = config2.getint('ChordText', 'waterfall_bass_treble_mode_1_x')
+waterfall_bass_treble_mode_1_y = config2.getint('ChordText', 'waterfall_bass_treble_mode_1_y')
+waterfall_note_list_mode_1_x = config2.getint('ChordText', 'waterfall_note_list_mode_1_x')
+waterfall_note_list_mode_1_y = config2.getint('ChordText', 'waterfall_note_list_mode_1_y')
+waterfall_chord_mode_2_x = config2.getint('ChordText', 'waterfall_chord_mode_2_x')
+waterfall_chord_mode_2_y = config2.getint('ChordText', 'waterfall_chord_mode_2_y')
+waterfall_bass_treble_mode_2_x = config2.getint('ChordText', 'waterfall_bass_treble_mode_2_x')
+waterfall_bass_treble_mode_2_y = config2.getint('ChordText', 'waterfall_bass_treble_mode_2_y')
+waterfall_note_list_mode_2_x = config2.getint('ChordText', 'waterfall_note_list_mode_2_x')
+waterfall_note_list_mode_2_y = config2.getint('ChordText', 'waterfall_note_list_mode_2_y')
+waterfall_chord_mode_3_x = config2.getint('ChordText', 'waterfall_chord_mode_3_x')
+waterfall_chord_mode_3_y = config2.getint('ChordText', 'waterfall_chord_mode_3_y')
+waterfall_bass_treble_mode_3_x = config2.getint('ChordText', 'waterfall_bass_treble_mode_3_x')
+waterfall_bass_treble_mode_3_y = config2.getint('ChordText', 'waterfall_bass_treble_mode_3_y')
+waterfall_note_list_mode_3_x = config2.getint('ChordText', 'waterfall_note_list_mode_3_x')
+waterfall_note_list_mode_3_y = config2.getint('ChordText', 'waterfall_note_list_mode_3_y')
 
 # 是否从midi文件读取根音
 if set_root_from_file == 1:
     root_file_path = config.get('ReadFiles', 'root_file_path')
 else:
     root_file_path = ''
+
+# 是否从midi文件读取踏板
+if get_sustain_from_file == 1:
+    sustain_file_path = config.get('ReadFiles', 'sustain_file_path')
+else:
+    sustain_file_path = ''
 
 # 初始化
 pygame.init()
@@ -388,6 +414,7 @@ global_time_delta = 0
 key_note = []  # 0 ~ 87
 global_events = []
 root_events = []
+sustain_events = []
 waterfalls = [[] for i in range(88)]
 notes_count = [0 for i in range(12)]
 appended = [0 for i in range(88)]
@@ -640,9 +667,12 @@ font1 = pygame.font.Font(font_path, font_size_1)
 font2 = pygame.font.Font(font_path, font_size_2)
 chord_font = pygame.font.Font(font_path, font_size_3)
 note_list_font = pygame.font.Font(font_path, font_size_4)
+chord_font_2 = pygame.font.Font(font_path, font_size_5)
+note_list_font_2 = pygame.font.Font(font_path, font_size_6)
 
 # 设置字体显示
 chord_text = chord_font.render('', True, chord_text_color)
+chord_text_2 = chord_font_2.render('', True, chord_text_color)
 sustain_label = font1.render('Sustain Pedal', True, sustain_text_color)
 major_key_print = font1.render(str('Majorkey: ' + major_key), True, major_key_text_color)
 speed_print = font1.render('0.0 Notes/Sec', True, speed_text_color)
@@ -674,6 +704,30 @@ def get_note():
                     velocity = int(msg[msg.find('velocity=') + 9] + msg[msg.find('velocity=') + 10] + msg[
                         msg.find('velocity=') + 11])
                 global_events.append([1, cur_note - 21, start_time, velocity])
+
+
+# 从指定midi文件读取踏板信号
+def get_sustain():
+    global sustain_file_path
+    global sustain_delta
+    global sustain_events
+    start_time = 0
+    mid = mido.MidiFile(sustain_file_path)
+    for p, track in enumerate(mid.tracks):
+        for msg0 in track:
+            msg = str(msg0)
+            if msg[6] == 'f':
+                start_time += int(msg[(msg.find('time=') + 5):])
+                if mode_id == 3 or mode_id == 5 or mode_id == 6:
+                    sustain_events.append([0, start_time])
+                elif mode_id == 4 or mode_id == 7:
+                    sustain_events.append([0, start_time + root_delta])
+            elif msg[6] == 'n':
+                start_time += int(msg[(msg.find('time=') + 5):])
+                if mode_id == 3 or mode_id == 5 or mode_id == 6:
+                    sustain_events.append([1, start_time])
+                elif mode_id == 4 or mode_id == 7:
+                    sustain_events.append([1, start_time + root_delta])
 
 
 # 从指定midi文件读取根音
@@ -781,83 +835,43 @@ def get_u_second():
 
 
 # 从输入设备读取midi信息
+cur_midi_signal = Queue()
 def input_midi():
-    global sustain
-    global on_sustain
-    global midi2
-    global midi1
-    global notes_count
-    global all_note_size
-    global key_note
-    global waterfalls
-    global sustain_state
-    while True:
-        if midi1 == 'Unable':
-            break
-        if if_exit == 1:
-            break
-        c_all = midi1.read(10)
-        if len(c_all) > 0:
-            for c in c_all:
-                if c[0][0] == 144:
-                    if sustain == 1:
-                        if c[0][1] in on_sustain:
-                            on_sustain.remove(c[0][1])
-                            if midi2 != 'Unable':
-                                midi2.note_off(c[0][1])
-                    if midi2 != 'Unable':
+    global cur_midi_signal
+    global if_exit
+    if midi1 != 'Unable':
+        while True:
+            time.sleep(0.001)
+            if if_exit == 1:
+                break
+            c_all = midi1.read(10)
+            if len(c_all) > 0:
+                for c in c_all:
+                    cur_midi_signal.put(c)
+                    # Key Press
+                    if c[0][0] == 144 and midi2 != 'Unable':
                         midi2.note_on(c[0][1], c[0][2])
-                    notes_count[(c[0][1] - 21) % 12] += 1
-                    all_note_size += 1
-                    key_note.append(c[0][1] - 21)
-                    if mode_id == 0 or mode_id == 2:
-                        waterfalls[c[0][1] - 21].append([0, 0, 0, get_wf_color(c[0][1] - 21)])
-                elif c[0][0] == 128:
-                    if sustain == 0:
-                        if midi2 != 'Unable':
-                            midi2.note_off(c[0][1])
-                    elif sustain == 1:
-                        on_sustain.append(c[0][1])
-                    if len(key_note) > 0:
-                        key_note.remove(c[0][1] - 21)
-                        if (mode_id == 0 or mode_id == 2) and len(waterfalls[c[0][1] - 21]) - 1 >= 0:
-                            waterfalls[c[0][1] - 21][len(waterfalls[c[0][1] - 21]) - 1][0] = 1
-                elif c[0][0] == 176:
-                    if c[0][1] == 64:
-                        if c[0][2] == 127:
-                            sustain = 1
-                            sustain_state = font2.render('√', True, sustain_text_color)
-                        elif c[0][2] == 0:
-                            sustain = 0
-                            sustain_state = font2.render('×', True, sustain_text_color)
-                            for y in on_sustain:
-                                if (y - 21) not in key_note:
-                                    if midi2 != 'Unable':
-                                        midi2.note_off(y)
-                            on_sustain = []
-        time.sleep(0.001)
+                    # Key Release
+                    elif c[0][0] == 128 and midi2 != 'Unable':
+                        midi2.note_off(c[0][1])
+                    # Sustain
+                    elif c[0][0] == 176 and midi2 != 'Unable':
+                        if c[0][1] == 64:
+                            if c[0][2] == 127:
+                                midi2.write_short(0xb0, 64, 127);
+                            elif c[0][2] == 0:
+                                midi2.write_short(0xb0, 64, 0);
 
 
-# 获取和弦
-def get_chord_run():
-    global cur_chord
-    global chord_text
-    global chord_text_color
-    global major_key
-    global root
-    global note_on_sheet
-    while True:
-        if if_exit == 1:
+# 主循环读取midi信息
+def read_midi():
+    global cur_midi_signal
+    all_midi_data = []
+    for i in range(20):
+        if(cur_midi_signal.empty()):
             break
-        if mode_id == 1 or mode_id == 2 or mode_id == 5 or mode_id == 6 or mode_id == 7:
-            time.sleep(0.5)
-            continue
-        cur_chord, note_on_sheet = chord.get_chord(key_note, on_sustain, major_key, root)
-        if cur_chord == '':
-            chord_text = chord_font.render('', True, chord_text_color)
-        else:
-            chord_text = chord_font.render(cur_chord, True, chord_text_color)
-        time.sleep(0.1)
+        all_midi_data.append(cur_midi_signal.get())
+    return all_midi_data
 
 
 # 随机或不随机获取瀑布流颜色
@@ -979,10 +993,8 @@ if mode_id >= 3:
     get_note()
     if set_root_from_file == 1:
         get_root()
-
-# get chord (waterfall mode only, else sleep)
-t5 = Thread(target=get_chord_run)
-t5.start()
+    if get_sustain_from_file == 1:
+        get_sustain()
 
 # print major key (all mode)
 t6 = Thread(target=print_major_key)
@@ -1016,8 +1028,10 @@ base_time = get_u_second()
 time_point = get_u_second()
 finished = 0
 finished2 = 0
+finished3 = 0
 cur_pos = 0
 cur_pos2 = 0
+cur_pos3 = 0
 
 if mode_id == 1 or mode_id == 2 or mode_id == 5 or mode_id == 6 or mode_id == 7:
     print_trans_screen = True
@@ -1031,28 +1045,66 @@ while True:
     global_time = get_u_second() - base_time
     global_time_delta = int(global_time * time_delta / 10000)
 
+    # receive midi signals
+    if mode_id <= 2:
+        c_all = read_midi()
+        if len(c_all) > 0:
+            for c in c_all:
+                if c[0][0] == 144:
+                    if sustain == 1:
+                        if c[0][1] in on_sustain:
+                            on_sustain.remove(c[0][1])
+                    notes_count[(c[0][1] - 21) % 12] += 1
+                    all_note_size += 1
+                    key_note.append(c[0][1] - 21)
+                    if mode_id == 0 or mode_id == 2:
+                        waterfalls[c[0][1] - 21].append([0, 0, 0, get_wf_color(c[0][1] - 21)])
+                elif c[0][0] == 128:
+                    if sustain == 1:
+                        on_sustain.append(c[0][1])
+                    if len(key_note) > 0:
+                        key_note.remove(c[0][1] - 21)
+                        if (mode_id == 0 or mode_id == 2) and len(waterfalls[c[0][1] - 21]) - 1 >= 0:
+                            waterfalls[c[0][1] - 21][len(waterfalls[c[0][1] - 21]) - 1][0] = 1
+                elif c[0][0] == 176:
+                    if c[0][1] == 64:
+                        if c[0][2] == 127:
+                            sustain = 1
+                            sustain_state = font2.render('√', True, sustain_text_color)
+                        elif c[0][2] == 0:
+                            sustain = 0
+                            sustain_state = font2.render('×', True, sustain_text_color)
+                            on_sustain = []
+
     # set note (score only or waterfall up)
     if finished == 0 and (mode_id == 3 or mode_id == 5 or mode_id == 6):
         while global_events[cur_pos][2] <= global_time_delta:
             if global_events[cur_pos][0] == 1:
-                key_note.append(global_events[cur_pos][1])
+                if sustain == 1:
+                    if global_events[cur_pos][1] + 21 in on_sustain:
+                        on_sustain.remove(global_events[cur_pos][1] + 21)
+                        if midi2 != 'Unable':
+                            midi2.note_off(global_events[cur_pos][1] + 21)
                 if midi2 != 'Unable':
                     midi2.note_on(global_events[cur_pos][1] + 21, global_events[cur_pos][3])
                 notes_count[global_events[cur_pos][1] % 12] += 1
                 all_note_size += 1
+                key_note.append(global_events[cur_pos][1])
                 if mode_id == 3 or mode_id == 6:
                     if len(waterfalls[global_events[cur_pos][1]]) > 0:
                         if waterfalls[global_events[cur_pos][1]][-1][0] == 0:
                             waterfalls[global_events[cur_pos][1]][-1][0] = 1
                     waterfalls[global_events[cur_pos][1]].append([0, 0, 0, get_wf_color(global_events[cur_pos][1])])
             elif global_events[cur_pos][0] == 0:
-                if midi2 != 'Unable':
-                    midi2.note_off(global_events[cur_pos][1] + 21)
+                if sustain == 0:
+                    if midi2 != 'Unable':
+                        midi2.note_off(global_events[cur_pos][1] + 21)
+                elif sustain == 1:
+                    on_sustain.append(global_events[cur_pos][1] + 21)
+                if len(key_note) > 0:
+                    key_note.remove(global_events[cur_pos][1])
                 if mode_id == 3 or mode_id == 6:
                     waterfalls[global_events[cur_pos][1]][len(waterfalls[global_events[cur_pos][1]]) - 1][0] = 1
-                for i in key_note:
-                    if i == global_events[cur_pos][1]:
-                        key_note.remove(i)
             cur_pos += 1
             if cur_pos == len(global_events):
                 finished = 1
@@ -1084,14 +1136,35 @@ while True:
                 finished2 = 1
                 root = -1
                 break
+                
+    # get sustain (midi playing)
+    if finished3 == 0 and mode_id >= 3 and get_sustain_from_file == 1:
+        while sustain_events[cur_pos3][1] <= global_time_delta:
+            if sustain_events[cur_pos3][0] == 1:
+                sustain = 1
+                sustain_state = font2.render('√', True, sustain_text_color)
+            else:
+                sustain = 0
+                sustain_state = font2.render('×', True, sustain_text_color)
+                for y in on_sustain:
+                    if (y - 21) not in key_note:
+                        if midi2 != 'Unable':
+                            midi2.note_off(y)
+                on_sustain = []
+            cur_pos3 += 1
+            if cur_pos3 == len(sustain_events):
+                finished3 = 1
+                sustain = 0
+                break
 
-    # get chord (with music score)
-    if mode_id == 1 or mode_id == 2 or mode_id == 5 or mode_id == 6 or mode_id == 7:
-        cur_chord, note_on_sheet = chord.get_chord(key_note, on_sustain, major_key, root)
-        if cur_chord == '':
-            chord_text = chord_font.render('(Empty)', True, chord_text_color)
-        else:
-            chord_text = chord_font.render(cur_chord, True, chord_text_color)
+    # get chord
+    cur_chord, note_on_sheet = chord.get_chord(key_note, on_sustain, major_key, root)
+    if cur_chord == '':
+        chord_text = chord_font.render('(Empty)', True, chord_text_color)
+        chord_text_2 = chord_font_2.render('(Empty)', True, chord_text_color)
+    else:
+        chord_text = chord_font.render(cur_chord, True, chord_text_color)
+        chord_text_2 = chord_font_2.render(cur_chord, True, chord_text_color)
 
     # calculate speed
     delta_t = get_u_second() - time_point
@@ -1177,17 +1250,26 @@ while True:
                 if len(waterfalls[i]) > 0:
                     if waterfalls[i][0][0] <= (global_resolution_y - 200) <= waterfalls[i][0][1]:
                         if appended[i] == 0:
-                            key_note.append(i)
+                            if sustain == 1:
+                                if i + 21 in on_sustain:
+                                    on_sustain.remove(i + 21)
+                                    if midi2 != 'Unable':
+                                        midi2.note_off(i + 21)
                             if midi2 != 'Unable':
                                 midi2.note_on(i + 21, waterfalls[i][0][2])
                             notes_count[i % 12] += 1
                             all_note_size += 1
                             appended[i] = 1
+                            key_note.append(i)
                     elif waterfalls[i][0][0] > (global_resolution_y - 200):
                         if appended[i] == 1:
-                            key_note.remove(i)
-                            if midi2 != 'Unable':
-                                midi2.note_off(i + 21)
+                            if sustain == 0:
+                                if midi2 != 'Unable':
+                                    midi2.note_off(i + 21)
+                            elif sustain == 1:
+                                on_sustain.append(i + 21)
+                            if len(key_note) > 0:
+                                key_note.remove(i)
                             appended[i] = 0
                         waterfalls[i].pop(0)
                 for j in waterfalls[i]:
@@ -1202,17 +1284,26 @@ while True:
                 if len(waterfalls[i]) > 0:
                     if waterfalls[i][0][0] <= (global_resolution_y - 200) <= waterfalls[i][0][1]:
                         if appended[i] == 0:
-                            key_note.append(i)
+                            if sustain == 1:
+                                if i + 21 in on_sustain:
+                                    on_sustain.remove(i + 21)
+                                    if midi2 != 'Unable':
+                                        midi2.note_off(i + 21)
                             if midi2 != 'Unable':
                                 midi2.note_on(i + 21, waterfalls[i][0][2])
                             notes_count[i % 12] += 1
                             all_note_size += 1
                             appended[i] = 1
+                            key_note.append(i)
                     elif waterfalls[i][0][0] > (global_resolution_y - 200):
                         if appended[i] == 1:
-                            key_note.remove(i)
-                            if midi2 != 'Unable':
-                                midi2.note_off(i + 21)
+                            if sustain == 0:
+                                if midi2 != 'Unable':
+                                    midi2.note_off(i + 21)
+                            elif sustain == 1:
+                                on_sustain.append(i + 21)
+                            if len(key_note) > 0:
+                                key_note.remove(i)
                             appended[i] = 0
                         waterfalls[i].pop(0)
                 for j in waterfalls[i]:
@@ -1267,12 +1358,40 @@ while True:
 
     # print chord (waterfall single mode)
     if mode_id == 0 or mode_id == 3 or mode_id == 4:
+        note_transfer = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+        modify_transfer = ['', 'bb', 'b', '#', 'x']
+        note_to_print = []
+        bass_note = ''
+        treble_note = ''
+        for h in note_on_sheet:
+            if h[2] >= 0:
+                to_append = note_transfer[h[0] % 7] + modify_transfer[h[1]]
+                if bass_note == '':
+                    bass_note = to_append
+                treble_note = to_append
+                if to_append not in note_to_print:
+                    note_to_print.append(to_append)
+        if len(treble_note) > 0 and len(bass_note) > 0:
+            note_to_print.remove(treble_note)
+            if treble_note != bass_note:
+                note_to_print.remove(bass_note)
+                note_to_print.insert(0, bass_note)
+            note_to_print.append(treble_note)
+        note_list_text_bt_2 = note_list_font_2.render('Bass: ' + bass_note + '  Treble: ' + treble_note,
+                                                  True, note_list_text_color)
+        note_list_text_2 = note_list_font_2.render(str(note_to_print), True, note_list_text_color)
         if print_chord == 1:
-            screen.blit(chord_text, (50, global_resolution_y - chord_text_waterfall_down_y))
+            screen.blit(chord_text_2, (waterfall_chord_mode_1_x, waterfall_chord_mode_1_y))
+            screen.blit(note_list_text_bt_2, (waterfall_bass_treble_mode_1_x, waterfall_bass_treble_mode_1_y))
+            screen.blit(note_list_text_2, (waterfall_note_list_mode_1_x, waterfall_note_list_mode_1_y))
         if print_chord == 2:
-            screen.blit(chord_text, (50, chord_text_waterfall_up_y))
+            screen.blit(chord_text_2, (waterfall_chord_mode_2_x, waterfall_chord_mode_2_y))
+            screen.blit(note_list_text_bt_2, (waterfall_bass_treble_mode_2_x, waterfall_bass_treble_mode_2_y))
+            screen.blit(note_list_text_2, (waterfall_note_list_mode_2_x, waterfall_note_list_mode_2_y))
         if print_chord == 3:
-            screen.blit(chord_text, (50, (global_resolution_y / 2) - chord_text_waterfall_middle_y))
+            screen.blit(chord_text_2, (waterfall_chord_mode_3_x, waterfall_chord_mode_3_y))
+            screen.blit(note_list_text_bt_2, (waterfall_bass_treble_mode_3_x, waterfall_bass_treble_mode_3_y))
+            screen.blit(note_list_text_2, (waterfall_note_list_mode_3_x, waterfall_note_list_mode_3_y))
 
     # print notes in list
     if mode_id == 1 or mode_id == 2 or mode_id == 5 or mode_id == 6 or mode_id == 7:
