@@ -34,7 +34,7 @@ chord_list = {
     'dhl': 'mM7',
     'dl': 'mM7(omit5)',
     'dgj': 'dim7',
-    'dj': 'dim7(omit5)',
+    'dj': 'm6(omit5)',
     'gj': 'dim7(omit3)',
     'dgk': 'm7b5',
     # 含有九音的和弦
